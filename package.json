@@ -1,0 +1,39 @@
+{
+  "name": "@witty-services/ts-serializer",
+  "version": "1.0.0-rc.1",
+  "description": "Typescript serializer library",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "/dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/witty-services/ts-serializer"
+  },
+  "scripts": {
+    "clean": "rm -R -f dist",
+    "build": "npm run clean && npm run lint && tsc",
+    "lint": "tslint -p tsconfig.json",
+    "test": "jest --coverage",
+    "publish:lib": "npm run build && npm publish --access=public"
+  },
+  "author": "Thomas Nisole",
+  "license": "MIT",
+  "peerDependencies": {
+    "typescript": "^3.4.3",
+    "lodash": "^4.17.15",
+    "reflect-metadata": "^0.1.13"
+  },
+  "devDependencies": {
+    "@types/jest": "^24.0.23",
+    "@types/node": "^12.12.17",
+    "coveralls": "^3.0.9",
+    "jest": "^24.9.0",
+    "lodash": "^4.17.15",
+    "reflect-metadata": "^0.1.13",
+    "ts-jest": "^24.2.0",
+    "tslint": "^5.20.1",
+    "typescript": "^3.4.3"
+  }
+}
