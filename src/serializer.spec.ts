@@ -41,7 +41,7 @@ describe('Serializer', () => {
     const data: any = {};
     spyOn(normalizer, 'normalize').and.returnValue(data);
 
-    expect(serializer.serializer(toBeNormalize)).toBe(data);
+    expect(serializer.serialize(toBeNormalize)).toBe(data);
     expect(normalizer.normalize).toHaveBeenCalledTimes(1);
     expect(normalizer.normalize).toHaveBeenCalledWith(toBeNormalize);
   });
