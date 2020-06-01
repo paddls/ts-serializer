@@ -18,11 +18,12 @@ This Typescript library to manage serialization and deserialization in a Typescr
     * [Configure your models](#configure-your-models)
     * [Serialization](#serialization)
     * [Deserialization](#deserialization)
-    * [Serialization/Deserialization configuration](#serializationdeserialization-configuration)
+    * [Serialization configuration](#serialization-configuration)
 * [API](#api)
     * [JsonPropertyDecorator](#jsonpropertydecorator)
     * [JsonPropertyContext](#jsonpropertycontext)
     * [CustomConverter](#customconverter)
+    * [NormalizerConfiguration](#normalizerconfiguration)
 * [How to run Unit Tests](#how-to-run-unit-tests)
 
 
@@ -34,7 +35,7 @@ To install the library run :
 npm i @witty-services/ts-repository
 ```
 
-## How use
+## How to use
 
 ### Configure your models
 
@@ -56,7 +57,6 @@ export class User {
   @JsonProperty(Address)
   public address: Address;
 }
-
 ````
 
 You can find the full json property decorator configuration in [API](#API) section.
@@ -64,20 +64,17 @@ You can find the full json property decorator configuration in [API](#API) secti
 ### Serialization
 
 ```typescript
-
 import {Serializer, Normalizer, Denormalizer} from '@witty-services/ts-serializer';
 
 const object: MyClass = new MyClass();
 
 const serializer: Serializer = new Serialize(new Normalizer(), new Denormalizer());
 const data: any = serializer.serialize(object);
-
 ```
 
 ### Deserialization
 
 ```typescript
-
 import {Serializer, Normalizer, Denormalizer} from '@witty-services/ts-serializer';
 
 class MyClass {
@@ -88,8 +85,22 @@ const data: any = {};
 
 const serializer: Serializer = new Serializer(new Normalizer(), new Denormalizer());
 const myObject: MyClass = serializer.deserialize(data);
-
 ```
+
+### Serializer configuration
+
+You can configure serializer via an object like that :
+
+````typescript
+import {NormalizerConfiguration} from '@witty-services/ts-serializer';
+
+const configuration: NormalizerConfiguration = {
+  denormalizeNull: false,
+  denormalizeUndefined: false,
+  normalizeNull: false,
+  normalizeUndefined: false
+};
+````
 
 ## API
 
@@ -97,7 +108,7 @@ const myObject: MyClass = serializer.deserialize(data);
 
 Argument | Type | Required | Description
 ---------|------|----------|------------
-jsonPropertyContext | [JsonPropertyContext](#json-property-context), string or Type | No | If no argument is provide, the attribute will be mapped with a field in json object with the same name.<br/> If argument is a string, the attribute will be mapped with a field in json object named with the provided string.<br/> If argument is a type, the attribute will be mapped with a field in json object with the same name, but the type provide is use to make the transformation.
+jsonPropertyContext | [JsonPropertyContext](#jsonpropertycontext), string or Type | No | If no argument is provide, the attribute will be mapped with a field in json object with the same name.<br/> If argument is a string, the attribute will be mapped with a field in json object named with the provided string.<br/> If argument is a type, the attribute will be mapped with a field in json object with the same name, but the type provide is use to make the transformation.
 
 ### JsonPropertyContext
 
@@ -107,7 +118,16 @@ field | string | No | You can change the name of mapped field. The attribute acc
 type | Type | No | You can provide a type to convert json data to an object of Type or convert an object of Type to json data using Type configuration
 readOnly | boolean | No | You can want to use the attribute configuration just in deserialization process
 writeOnly | boolean | No | You can want to use the attribute configuration just in serialization process
-customConverter | Converter | You can use a custom converter object of type [Converter](#Converter) to convert your object
+customConverter | Converter | You can use a custom converter object of type [Converter](#converter) to convert your object
+
+### NormalizerConfiguration
+
+Attribute | Type | Required | Default value | Description
+----------|------|----------|---------------|------------
+denormalizerNull | boolean | No | false | Configuration denormalizer to no denormalize null value
+denormalizeUndefined | boolean | No | false | Configuration denormalizer to no denormalize undefined value
+normalizeNull | boolean | No | false | Configuration normalizer to no normalize null value
+normalizeUndefined | boolean | No | false | Configuration normalizer to no normalize undefined value
 
 ### CustomConverter 
 

@@ -14,7 +14,7 @@ export class Serializer {
     }
   }
 
-  public serializer<T>(object: T): any {
+  public serialize<T>(object: T): any {
     return this.normalizer.normalize(object);
   }
 
