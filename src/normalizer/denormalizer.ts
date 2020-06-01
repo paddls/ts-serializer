@@ -1,5 +1,5 @@
 import {get, isArray} from 'lodash';
-import {ColumnContextConfiguration, COLUMNS_METADATA_KEY} from '../decorator/column.decorator';
+import {JsonPropertyContextConfiguration, JSON_PROPERTY_METADATA_KEY} from '../decorator/json-property.decorator';
 import {DEFAULT_NORMALIZER_CONFIGURATION, NormalizerConfiguration} from './normalizer.configuration';
 
 export class Denormalizer {
@@ -13,42 +13,42 @@ export class Denormalizer {
 
     const result: T = new type();
 
-    const columns: ColumnContextConfiguration<T, any>[] = Reflect.getMetadata(COLUMNS_METADATA_KEY, result);
+    const jsonProperties: JsonPropertyContextConfiguration<T, any>[] = Reflect.getMetadata(JSON_PROPERTY_METADATA_KEY, result);
 
-    if (!columns) {
+    if (!jsonProperties) {
       return result;
     }
 
-    columns.forEach((cc: ColumnContextConfiguration<T, any>) => {
+    jsonProperties.forEach((cc: JsonPropertyContextConfiguration<T, any>) => {
       if (cc.writeOnly) {
         return;
       }
 
-      const columnData: any = get(data, cc.field);
+      const jsonPropertyData: any = get(data, cc.field);
 
-      if (columnData === undefined && !this.configuration.denormalizeUndefined) {
+      if (jsonPropertyData === undefined && !this.configuration.denormalizeUndefined) {
         return;
       }
 
-      if (columnData === null && !this.configuration.denormalizeNull) {
+      if (jsonPropertyData === null && !this.configuration.denormalizeNull) {
         return;
       }
 
-      if (isArray(columnData)) {
+      if (isArray(jsonPropertyData)) {
         if (cc.type) {
-          result[cc.propertyKey] = columnData.map((d: any) => this.denormalize(cc.type(), d));
+          result[cc.propertyKey] = jsonPropertyData.map((d: any) => this.denormalize(cc.type(), d));
         } else if (cc.customConverter) {
-          result[cc.propertyKey] = columnData.map((d: any) => new (cc.customConverter())().fromJson(d));
+          result[cc.propertyKey] = jsonPropertyData.map((d: any) => new (cc.customConverter())().fromJson(d));
         } else {
-          result[cc.propertyKey] = columnData;
+          result[cc.propertyKey] = jsonPropertyData;
         }
       } else {
-        if (cc.type && !!columnData) {
-          result[cc.propertyKey] = this.denormalize(cc.type(), columnData);
+        if (cc.type && !!jsonPropertyData) {
+          result[cc.propertyKey] = this.denormalize(cc.type(), jsonPropertyData);
         } else if (cc.customConverter) {
-          result[cc.propertyKey] = new (cc.customConverter())().fromJson(columnData);
+          result[cc.propertyKey] = new (cc.customConverter())().fromJson(jsonPropertyData);
         } else {
-          result[cc.propertyKey] = columnData;
+          result[cc.propertyKey] = jsonPropertyData;
         }
       }
     });

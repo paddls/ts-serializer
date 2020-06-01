@@ -1,25 +1,25 @@
 import 'reflect-metadata';
 import {Normalizer} from './normalizer';
 import {DEFAULT_NORMALIZER_CONFIGURATION, NormalizerConfiguration} from './normalizer.configuration';
-import {Column} from '../decorator/column.decorator';
+import {JsonProperty} from '../decorator/json-property.decorator';
 import {DateConverter} from '../converter/date.converter';
 import {cloneDeep} from 'lodash';
 import {Denormalizer} from './denormalizer';
 
-class EmptyColumn {
-  public name: string = 'myEmptyColumnObject';
+class EmptyJsonProperty {
+  public name: string = 'myEmptyJsonPropertyObject';
 }
 
-class ClassWithColumn {}
+class ClassWithJsonProperty {}
 
 describe('Normalizer', () => {
   let configuration: NormalizerConfiguration;
-  let normalizerEmptyColumn: Normalizer;
+  let normalizerEmptyJsonProperty: Normalizer;
   let normalizer: Normalizer;
 
   beforeEach(() => {
     configuration = cloneDeep(DEFAULT_NORMALIZER_CONFIGURATION);
-    normalizerEmptyColumn = new Normalizer(configuration);
+    normalizerEmptyJsonProperty = new Normalizer(configuration);
     normalizer = new Normalizer(configuration);
   });
 
@@ -34,14 +34,14 @@ describe('Normalizer', () => {
     expect(myNormalizer.getConfiguration()).toEqual(DEFAULT_NORMALIZER_CONFIGURATION);
   });
 
-  it('should normalize an object with no column', () => {
-    expect(normalizerEmptyColumn.normalize(new EmptyColumn())).toEqual({});
+  it('should normalize an object with no json property', () => {
+    expect(normalizerEmptyJsonProperty.normalize(new EmptyJsonProperty())).toEqual({});
   });
 
-  it('should not normalize column with readOnly parameter', () => {
-    class MyClass extends ClassWithColumn {
+  it('should not normalize json property with readOnly parameter', () => {
+    class MyClass extends ClassWithJsonProperty {
 
-      @Column({field: 'name', readOnly: true})
+      @JsonProperty({field: 'name', readOnly: true})
       public name: string = 'test';
     }
 
@@ -50,10 +50,10 @@ describe('Normalizer', () => {
     expect(normalizer.normalize(obj)).toEqual({});
   });
 
-  it('should not normalize column with a value to undefined with falsy configuration', () => {
-    class MyClass extends ClassWithColumn {
+  it('should not normalize json property with a value to undefined with falsy configuration', () => {
+    class MyClass extends ClassWithJsonProperty {
 
-      @Column()
+      @JsonProperty()
       public name: string = undefined;
     }
 
@@ -62,10 +62,10 @@ describe('Normalizer', () => {
     expect(normalizer.normalize(obj)).toEqual({});
   });
 
-  it('should not normalize column with a value to null with falsy configuration and with normalize undefined truthy', () => {
-    class MyClass extends ClassWithColumn {
+  it('should not normalize json property with a value to null with falsy configuration and with normalize undefined truthy', () => {
+    class MyClass extends ClassWithJsonProperty {
 
-      @Column()
+      @JsonProperty()
       public name: string = null;
     }
 
@@ -77,27 +77,27 @@ describe('Normalizer', () => {
 
   describe('Normalize value with all normalize configuration truthy', () => {
 
-    class MyNestedClass extends ClassWithColumn {
+    class MyNestedClass extends ClassWithJsonProperty {
 
-      @Column({field: 'complexNested.nestedName'})
+      @JsonProperty({field: 'complexNested.nestedName'})
       public nestedName: string = null;
 
-      @Column({customConverter: () => DateConverter})
+      @JsonProperty({customConverter: () => DateConverter})
       public createdAt: Date = null;
 
-      @Column({customConverter: () => DateConverter})
+      @JsonProperty({customConverter: () => DateConverter})
       public otherDates: Date[];
 
-      @Column()
+      @JsonProperty()
       public otherNestedNames: string[];
     }
 
-    class MyClass extends ClassWithColumn {
+    class MyClass extends ClassWithJsonProperty {
 
-      @Column(() => MyNestedClass)
+      @JsonProperty(() => MyNestedClass)
       public nested: MyNestedClass = null;
 
-      @Column(() => MyNestedClass)
+      @JsonProperty(() => MyNestedClass)
       public nesteds: MyNestedClass[] = null;
     }
 
@@ -106,7 +106,7 @@ describe('Normalizer', () => {
       configuration.normalizeNull = true;
     });
 
-    it('should normalize to null a column with a type and a null value', () => {
+    it('should normalize to null a json property with a type and a null value', () => {
       const obj: MyClass = new MyClass();
       expect(normalizer.normalize(obj)).toEqual({
         nested: null,
@@ -114,7 +114,7 @@ describe('Normalizer', () => {
       });
     });
 
-    it('should normalize to empty array a column with a type and a empty array value', () => {
+    it('should normalize to empty array a json property with a type and a empty array value', () => {
       const obj: MyClass = new MyClass();
       obj.nesteds = [];
       expect(normalizer.normalize(obj)).toEqual({
@@ -123,7 +123,7 @@ describe('Normalizer', () => {
       });
     });
 
-    it('should normalize a column with a type and normalize all others columns', () => {
+    it('should normalize a json property with a type and normalize all others json properties', () => {
       const obj: MyClass = new MyClass();
       obj.nested = new MyNestedClass();
       obj.nested.nestedName = 'toto';

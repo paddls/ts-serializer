@@ -1,22 +1,22 @@
 import 'reflect-metadata';
 import {Denormalizer} from './denormalizer';
 import {DEFAULT_NORMALIZER_CONFIGURATION, NormalizerConfiguration} from './normalizer.configuration';
-import {Column} from '../decorator/column.decorator';
+import {JsonProperty} from '../decorator/json-property.decorator';
 import {DateConverter} from '../converter/date.converter';
 import {cloneDeep} from 'lodash';
 
-class EmptyColumn {
-  public name: string = 'myEmptyColumnObject';
+class EmptyJsonProperty {
+  public name: string = 'myEmptyJsonPropertyObject';
 }
 
 describe('Denormalizer', () => {
   const configuration: NormalizerConfiguration = cloneDeep(DEFAULT_NORMALIZER_CONFIGURATION);
 
-  let denormalizerEmptyColumn: Denormalizer;
+  let denormalizerEmptyJsonProperty: Denormalizer;
   let denormalizer: Denormalizer;
 
   beforeEach(() => {
-    denormalizerEmptyColumn = new Denormalizer(configuration);
+    denormalizerEmptyJsonProperty = new Denormalizer(configuration);
     denormalizer = new Denormalizer(configuration);
   });
 
@@ -32,17 +32,17 @@ describe('Denormalizer', () => {
   });
 
   it('should not denormalize an null object', () => {
-    expect(denormalizerEmptyColumn.denormalize(EmptyColumn, null)).toBeNull();
+    expect(denormalizerEmptyJsonProperty.denormalize(EmptyJsonProperty, null)).toBeNull();
   });
 
-  it('should denormalize a class with no column, no join column and no sub collection', () => {
-    expect(denormalizerEmptyColumn.denormalize(EmptyColumn, {name: 'anotherValue'})).toEqual(new EmptyColumn());
+  it('should denormalize a class with no json property, no join json property and no sub collection', () => {
+    expect(denormalizerEmptyJsonProperty.denormalize(EmptyJsonProperty, {name: 'anotherValue'})).toEqual(new EmptyJsonProperty());
   });
 
-  it('should not normalize column with writeOnly parameter', () => {
+  it('should not normalize json property with writeOnly parameter', () => {
     class MyClass {
 
-      @Column({field: 'name', writeOnly: true})
+      @JsonProperty({field: 'name', writeOnly: true})
       public name: string = 'test';
     }
 
@@ -50,10 +50,10 @@ describe('Denormalizer', () => {
     expect(obj.name).toEqual('test');
   });
 
-  it('should not denormalize column with a value to undefined with falsy configuration', () => {
+  it('should not denormalize json property with a value to undefined with falsy configuration', () => {
     class MyClass {
 
-      @Column()
+      @JsonProperty()
       public name: string;
     }
 
@@ -61,10 +61,10 @@ describe('Denormalizer', () => {
     expect(denormalizer.denormalize(MyClass, {name: undefined})).toEqual(new MyClass());
   });
 
-  it('should not denormalize column with a value to null with falsy configuration and with denormalize undefined truthy', () => {
+  it('should not denormalize json property with a value to null with falsy configuration and with denormalize undefined truthy', () => {
     class MyClass {
 
-      @Column()
+      @JsonProperty()
       public name: string;
     }
 
@@ -78,25 +78,25 @@ describe('Denormalizer', () => {
 
     class MyNestedClass {
 
-      @Column({field: 'complexNested.nestedName'})
+      @JsonProperty({field: 'complexNested.nestedName'})
       public nestedName: string = null;
 
-      @Column({customConverter: () => DateConverter})
+      @JsonProperty({customConverter: () => DateConverter})
       public createdAt: Date = null;
 
-      @Column({customConverter: () => DateConverter})
+      @JsonProperty({customConverter: () => DateConverter})
       public otherDates: Date[];
 
-      @Column()
+      @JsonProperty()
       public otherNestedNames: string[];
     }
 
     class MyClass {
 
-      @Column(() => MyNestedClass)
+      @JsonProperty(() => MyNestedClass)
       public nested: MyNestedClass = null;
 
-      @Column(() => MyNestedClass)
+      @JsonProperty(() => MyNestedClass)
       public nesteds: MyNestedClass[] = null;
     }
 
@@ -105,27 +105,27 @@ describe('Denormalizer', () => {
       configuration.denormalizeNull = true;
     });
 
-    it('should normalize to undefined a column with a type and a undefined value', () => {
+    it('should normalize to undefined a json property with a type and a undefined value', () => {
       const obj: MyClass = new MyClass();
       obj.nested = undefined;
       obj.nesteds = undefined;
       expect(denormalizer.denormalize(MyClass, {nested: undefined, nesteds: undefined})).toEqual(obj);
     });
 
-    it('should normalize to null a column with a type and a nullable value', () => {
+    it('should normalize to null a json property with a type and a nullable value', () => {
       const obj: MyClass = new MyClass();
       obj.nested = null;
       obj.nesteds = null;
       expect(denormalizer.denormalize(MyClass, {nested: null, nesteds: null})).toEqual(obj);
     });
 
-    it('should normalize to empty array a column with a type and a empty array value', () => {
+    it('should normalize to empty array a json property with a type and a empty array value', () => {
       const obj: MyClass = new MyClass();
       obj.nesteds = [];
       expect(denormalizer.denormalize(MyClass, {nested: null, nesteds: []})).toEqual(obj);
     });
 
-    it('should denormalize a column with a type and denormalize all others columns', () => {
+    it('should denormalize a json property with a type and denormalize all others json properties', () => {
       const obj: MyClass = new MyClass();
       obj.nested = new MyNestedClass();
       obj.nested.nestedName = 'toto';

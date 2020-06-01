@@ -11,6 +11,21 @@
 
 This Typescript library to manage serialization and deserialization in a Typescript program. It use decorator to configure serialization and deserialization.
 
+## Summary
+
+* [How to install](#how-to-install)
+* [How to use](#how-to-use)
+    * [Configure your models](#configure-your-models)
+    * [Serialization](#serialization)
+    * [Deserialization](#deserialization)
+    * [Serialization/Deserialization configuration](#serializationdeserialization-configuration)
+* [API](#api)
+    * [JsonPropertyDecorator](#jsonpropertydecorator)
+    * [JsonPropertyContext](#jsonpropertycontext)
+    * [CustomConverter](#customconverter)
+* [How to run Unit Tests](#how-to-run-unit-tests)
+
+
 ## How to install
 
 To install the library run :
@@ -24,27 +39,27 @@ npm i @witty-services/ts-repository
 ### Configure your models
 
 ````typescript
-import {Column} from '@witty-services/ts-serializer';
+import {JsonProperty} from '@witty-services/ts-serializer';
 import {Address} from './address.model';
 
 export class User { 
 
-  @Column({readOnly: true})
+  @JsonProperty({readOnly: true})
   public id: string;
 
-  @Column()
+  @JsonProperty()
   public firstName: string
 
-  @Column('lastname')
+  @JsonProperty('lastname')
   public lastName: string;
 
-  @Column(Address)
+  @JsonProperty(Address)
   public address: Address;
 }
 
 ````
 
-You can find the full column decorator configuration in [API](#API) section.
+You can find the full json property decorator configuration in [API](#API) section.
 
 ### Serialization
 
@@ -78,13 +93,13 @@ const myObject: MyClass = serializer.deserialize(data);
 
 ## API
 
-### ColumnDecorator
+### JsonPropertyDecorator
 
 Argument | Type | Required | Description
 ---------|------|----------|------------
-columnContext | [ColumnContext](#column-context), string or Type | No | If no argument is provide, the attribute will be mapped with a field in json object with the same name.<br/> If argument is a string, the attribute will be mapped with a field in json object named with the provided string.<br/> If argument is a type, the attribute will be mapped with a field in json object with the same name, but the type provide is use to make the transformation.
+jsonPropertyContext | [JsonPropertyContext](#json-property-context), string or Type | No | If no argument is provide, the attribute will be mapped with a field in json object with the same name.<br/> If argument is a string, the attribute will be mapped with a field in json object named with the provided string.<br/> If argument is a type, the attribute will be mapped with a field in json object with the same name, but the type provide is use to make the transformation.
 
-### ColumnContext
+### JsonPropertyContext
 
 Attribute | Type | Required | Description
 ----------|------|----------|------------
