@@ -75,6 +75,32 @@ describe('Normalizer', () => {
     expect(normalizer.normalize(obj)).toEqual({});
   });
 
+  it('should normalize json property with a value to null with falsy configuration and with column configuration truthy', () => {
+    class MyClass {
+
+      @JsonProperty({normalizeNull: true, normalizeUndefined: false})
+      public name: string;
+    }
+
+    const obj: MyClass = new MyClass();
+    obj.name = null;
+
+    expect(normalizer.normalize(obj)).toEqual({name: null});
+  });
+
+  it('should normalize json property with a value to undefined with falsy configuration and with column configuration truthy', () => {
+    class MyClass {
+
+      @JsonProperty({normalizeNull: false, normalizeUndefined: true})
+      public name: string;
+    }
+
+    const obj: MyClass = new MyClass();
+    obj.name = undefined;
+
+    expect(normalizer.normalize(obj)).toEqual({name: undefined});
+  });
+
   describe('Normalize value with all normalize configuration truthy', () => {
 
     class MyNestedClass extends ClassWithJsonProperty {
@@ -162,6 +188,30 @@ describe('Normalizer', () => {
           }
         ]
       });
+    });
+
+    it('should not normalize json property with a value to null with truthy configuration and with column configuration falsy', () => {
+      class MyClass {
+
+        @JsonProperty({normalizeNull: false, normalizeUndefined: true})
+        public name: string;
+      }
+
+      const obj: MyClass = new MyClass();
+      obj.name = null;
+      expect(normalizer.normalize(obj)).toEqual({});
+    });
+
+    it('should not normalize json property with a value to undefined with truthy configuration and with column configuration falsy', () => {
+      class MyClass {
+
+        @JsonProperty({normalizeNull: true, normalizeUndefined: false})
+        public name: string;
+      }
+
+      const obj: MyClass = new MyClass();
+      obj.name = undefined;
+      expect(normalizer.normalize(obj)).toEqual({});
     });
   });
 });

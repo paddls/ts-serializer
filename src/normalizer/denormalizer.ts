@@ -26,11 +26,11 @@ export class Denormalizer {
 
       const jsonPropertyData: any = get(data, cc.field);
 
-      if (jsonPropertyData === undefined && !this.configuration.denormalizeUndefined) {
+      if (jsonPropertyData === undefined && !this.haveToDenormalize(this.configuration.denormalizeUndefined, cc.denormalizeUndefined)) {
         return;
       }
 
-      if (jsonPropertyData === null && !this.configuration.denormalizeNull) {
+      if (jsonPropertyData === null && !this.haveToDenormalize(this.configuration.denormalizeNull, cc.denormalizeNull)) {
         return;
       }
 
@@ -54,5 +54,13 @@ export class Denormalizer {
     });
 
     return result;
+  }
+
+  private haveToDenormalize(globalDenormalizeConfiguration: boolean, columnDenormalizeConfiguration: boolean): boolean {
+    if (columnDenormalizeConfiguration != null) {
+      return columnDenormalizeConfiguration;
+    }
+
+    return globalDenormalizeConfiguration;
   }
 }

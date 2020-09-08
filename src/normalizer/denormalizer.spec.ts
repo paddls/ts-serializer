@@ -22,6 +22,7 @@ describe('Denormalizer', () => {
 
   it('should have a default configuration', () => {
     class MyDenormalizer extends Denormalizer {
+
       public getConfiguration(): NormalizerConfiguration {
         return this.configuration;
       }
@@ -72,6 +73,30 @@ describe('Denormalizer', () => {
     configuration.denormalizeNull = false;
 
     expect(denormalizer.denormalize(MyClass, {name: null})).toEqual(new MyClass());
+  });
+
+  it('should denormalize json property with a value to null with falsy configuration and with column configuration truthy', () => {
+    class MyClass {
+
+      @JsonProperty({denormalizeNull: true, denormalizeUndefined: false})
+      public name: string;
+    }
+
+    const expectedValue: MyClass = new MyClass();
+    expectedValue.name = null;
+    expect(denormalizer.denormalize(MyClass, {name: null})).toEqual(expectedValue);
+  });
+
+  it('should denormalize json property with a value to undefined with falsy configuration and with column configuration truthy', () => {
+    class MyClass {
+
+      @JsonProperty({denormalizeNull: false, denormalizeUndefined: true})
+      public name: string;
+    }
+
+    const expectedValue: MyClass = new MyClass();
+    expectedValue.name = undefined;
+    expect(denormalizer.denormalize(MyClass, {name: undefined})).toEqual(expectedValue);
   });
 
   describe('Denormalize value with all denormalize configuration truthy', () => {
@@ -164,6 +189,26 @@ describe('Denormalizer', () => {
           ]
         }
       )).toEqual(obj);
+    });
+
+    it('should not denormalize json property with a value to null with truthy configuration and with column configuration falsy', () => {
+      class MyClass {
+
+        @JsonProperty({denormalizeNull: false, denormalizeUndefined: true})
+        public name: string;
+      }
+
+      expect(denormalizer.denormalize(MyClass, {name: null})).toEqual(new MyClass());
+    });
+
+    it('should not denormalize json property with a value to undefined with truthy configuration and with column configuration falsy', () => {
+      class MyClass {
+
+        @JsonProperty({denormalizeNull: true, denormalizeUndefined: false})
+        public name: string;
+      }
+
+      expect(denormalizer.denormalize(MyClass, {name: undefined})).toEqual(new MyClass());
     });
   });
 });

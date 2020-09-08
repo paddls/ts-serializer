@@ -1,4 +1,4 @@
-import {JsonPropertyContextConfiguration, JSON_PROPERTY_METADATA_KEY} from '../decorator/json-property.decorator';
+import {JSON_PROPERTY_METADATA_KEY, JsonPropertyContextConfiguration} from '../decorator/json-property.decorator';
 import {isArray, set} from 'lodash';
 import {DEFAULT_NORMALIZER_CONFIGURATION, NormalizerConfiguration} from './normalizer.configuration';
 
@@ -22,11 +22,11 @@ export class Normalizer {
 
       const jsonPropertyData: any = object[jsonProperty.propertyKey];
 
-      if (jsonPropertyData === undefined && !this.configuration.normalizeUndefined) {
+      if (jsonPropertyData === undefined && !this.haveToNormalize(this.configuration.normalizeUndefined, jsonProperty.normalizeUndefined)) {
         return;
       }
 
-      if (jsonPropertyData === null && !this.configuration.normalizeNull) {
+      if (jsonPropertyData === null && !this.haveToNormalize(this.configuration.normalizeNull, jsonProperty.normalizeNull)) {
         return;
       }
 
@@ -50,5 +50,13 @@ export class Normalizer {
     });
 
     return result;
+  }
+
+  private haveToNormalize(globalNormalizeConfiguration: boolean, columnNormalizeConfiguration: boolean): boolean {
+    if (columnNormalizeConfiguration != null) {
+      return columnNormalizeConfiguration;
+    }
+
+    return globalNormalizeConfiguration;
   }
 }

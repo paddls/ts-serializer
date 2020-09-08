@@ -13,6 +13,14 @@ export interface JsonPropertyContext<T, R> {
   writeOnly?: boolean;
 
   customConverter?: () => new(...args: any[]) => Converter<T, R>;
+
+  denormalizeNull?: boolean;
+
+  denormalizeUndefined?: boolean;
+
+  normalizeNull?: boolean;
+
+  normalizeUndefined?: boolean;
 }
 
 export interface JsonPropertyContextConfiguration<T, R> extends JsonPropertyContext<T, R> {
