@@ -4,6 +4,7 @@ import {DEFAULT_NORMALIZER_CONFIGURATION, NormalizerConfiguration} from './norma
 import {JsonProperty} from '../decorator/json-property.decorator';
 import {DateConverter} from '../converter/date.converter';
 import {cloneDeep} from 'lodash';
+import {JsonSubTypes} from '..';
 
 class EmptyJsonProperty {
   public name: string = 'myEmptyJsonPropertyObject';
@@ -211,4 +212,88 @@ describe('Denormalizer', () => {
       expect(denormalizer.denormalize(MyClass, {name: undefined})).toEqual(new MyClass());
     });
   });
+
+  describe('Denormalize values with inheritance', () => {
+
+    enum VehicleType {
+      CAR = 'CAR',
+      TRUCK = 'TRUCK'
+    }
+
+    @JsonSubTypes<Vehicle>({
+      field: 'type',
+      types: {
+        CAR: () => Car,
+        TRUCK: () => Truck
+      }
+    })
+    abstract class Vehicle {
+
+      @JsonProperty()
+      public name: string;
+    }
+
+    class Car extends Vehicle {
+
+      @JsonProperty()
+      public seatingCapacity: number;
+    }
+
+    class Truck extends Vehicle {
+
+      @JsonProperty()
+      public payloadCapacity: number;
+    }
+
+    it('should deserialize a car via Vehicle inheritance system', () => {
+      const carData: any = {
+        name: 'Passat',
+        type: VehicleType.CAR,
+        seatingCapacity: 4
+      };
+      const carExpected: Car = new Car();
+      carExpected.name = 'Passat';
+      carExpected.seatingCapacity = 4;
+
+      expect(denormalizer.denormalize(Vehicle, carData)).toEqual(carExpected);
+    });
+
+    it('should deserialize a truck via Vehicle inheritance system', () => {
+      const carData: any = {
+        name: 'Renault Truck',
+        type: VehicleType.TRUCK,
+        payloadCapacity:3
+      };
+      const truckExpected: Truck = new Truck();
+      truckExpected.name = 'Renault Truck';
+      truckExpected.payloadCapacity = 3;
+
+      expect(denormalizer.denormalize(Truck, carData)).toEqual(truckExpected);
+    });
+
+    it('should throw an error when deserialize via inheritance system when field is undefined', () => {
+      const carData: any = {
+        name: 'Renault Truck',
+        payloadCapacity:3
+      };
+      const truckExpected: Truck = new Truck();
+      truckExpected.name = 'Renault Truck';
+      truckExpected.payloadCapacity = 3;
+
+      expect(() => denormalizer.denormalize(Truck, carData)).toThrowError('Field "type" must not be null.');
+    });
+
+    it('should throw an error when deserialize via inheritance system when field is null', () => {
+      const carData: any = {
+        name: 'Renault Truck',
+        type: null,
+        payloadCapacity:3
+      };
+      const truckExpected: Truck = new Truck();
+      truckExpected.name = 'Renault Truck';
+      truckExpected.payloadCapacity = 3;
+
+      expect(() => denormalizer.denormalize(Truck, carData)).toThrowError('Field "type" must not be null.');
+    });
+  })
 });

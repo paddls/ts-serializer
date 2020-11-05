@@ -1,17 +1,19 @@
 import {get, isArray} from 'lodash';
 import {JsonPropertyContextConfiguration, JSON_PROPERTY_METADATA_KEY} from '../decorator/json-property.decorator';
 import {DEFAULT_NORMALIZER_CONFIGURATION, NormalizerConfiguration} from './normalizer.configuration';
+import {JSON_SUB_TYPES_METADATA_KEY, JsonSubTypesContext} from '../decorator/json-sub-types.decorator';
+import {SerializeType} from '../common';
 
 export class Denormalizer {
 
   public constructor(protected readonly configuration: NormalizerConfiguration = DEFAULT_NORMALIZER_CONFIGURATION) {}
 
-  public denormalize<T>(type: new() => T, data: any|any[]): T {
+  public denormalize<T>(type: SerializeType<T>, data: any): T {
     if (!data) {
       return null;
     }
 
-    const result: T = new type();
+    const result: T = this.instantiateObject(type, data);
 
     const jsonProperties: JsonPropertyContextConfiguration<T, any>[] = Reflect.getMetadata(JSON_PROPERTY_METADATA_KEY, result);
 
@@ -62,5 +64,19 @@ export class Denormalizer {
     }
 
     return globalDenormalizeConfiguration;
+  }
+
+  private instantiateObject<T>(type: SerializeType<T>, data: any): T {
+    const jsonSubTypes: JsonSubTypesContext<T> = Reflect.getMetadata(JSON_SUB_TYPES_METADATA_KEY, type);
+
+    if (!jsonSubTypes) {
+      return new (type as new() => T)();
+    }
+
+    if (get(data, jsonSubTypes.field, null) === null) {
+      throw new Error(`Field "${jsonSubTypes.field}" must not be null.`);
+    }
+
+    return new (jsonSubTypes.types[get(data, jsonSubTypes.field)]())();
   }
 }

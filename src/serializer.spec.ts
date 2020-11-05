@@ -45,4 +45,38 @@ describe('Serializer', () => {
     expect(normalizer.normalize).toHaveBeenCalledTimes(1);
     expect(normalizer.normalize).toHaveBeenCalledWith(toBeNormalize);
   });
+
+  it('should call x times normalizer when serializeAll is called with array', () => {
+    const toBeNormalize: Mock[] = [new Mock(), new Mock()];
+    const data: any = [{}, {}];
+    spyOn(normalizer, 'normalize').and.returnValues(...data);
+
+    expect(serializer.serializeAll(toBeNormalize)).toEqual(data);
+    expect(normalizer.normalize).toHaveBeenCalledTimes(2);
+    expect(normalizer.normalize).toHaveBeenCalledWith(toBeNormalize[0]);
+    expect(normalizer.normalize).toHaveBeenCalledWith(toBeNormalize[1]);
+  });
+
+  it('should throw an error when serializeAll is called with non array value', () => {
+    const toBeNormalize: any = new Mock();
+
+    expect(() => serializer.serializeAll(toBeNormalize)).toThrowError(`${toBeNormalize} is not an array.`);
+  });
+
+  it('should call x times denormalizer when deserializeAll is called with array', () => {
+    const data: Mock[] = [new Mock(), new Mock()];
+    const toBeDenormalize: any = [{}, {}];
+    spyOn(denormalizer, 'denormalize').and.returnValues(...data);
+
+    expect(serializer.deserializeAll(Mock, toBeDenormalize)).toEqual(data);
+    expect(denormalizer.denormalize).toHaveBeenCalledTimes(2);
+    expect(denormalizer.denormalize).toHaveBeenCalledWith(Mock, toBeDenormalize[0]);
+    expect(denormalizer.denormalize).toHaveBeenCalledWith(Mock, toBeDenormalize[1]);
+  });
+
+  it('should throw an error when deserializeAll is called with non array value', () => {
+    const toBeDenormalize: any = {};
+
+    expect(() => serializer.deserializeAll(Mock, toBeDenormalize)).toThrowError(`${toBeDenormalize} is not an array.`);
+  });
 });

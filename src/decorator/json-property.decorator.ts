@@ -1,4 +1,5 @@
 import {Converter} from '../converter/converter';
+import {ConstructorFunction, SerializeType} from '../common';
 
 export const JSON_PROPERTY_METADATA_KEY: string = 'ts-serializer:json-properties';
 
@@ -6,13 +7,13 @@ export interface JsonPropertyContext<T, R> {
 
   field?: string;
 
-  type?: () => new(...args: any[]) => T;
+  type?: () => SerializeType<T>;
 
   readOnly?: boolean;
 
   writeOnly?: boolean;
 
-  customConverter?: () => new(...args: any[]) => Converter<T, R>;
+  customConverter?: () => ConstructorFunction<Converter<T, R>>;
 
   denormalizeNull?: boolean;
 
@@ -28,7 +29,7 @@ export interface JsonPropertyContextConfiguration<T, R> extends JsonPropertyCont
   propertyKey: string;
 }
 
-export function JsonProperty<T, R>(jsonPropertyContext?: JsonPropertyContext<T, R>|string|(() => new(...args: any[]) => T)): any {
+export function JsonProperty<T, R>(jsonPropertyContext?: JsonPropertyContext<T, R>|string|(() => SerializeType<T>)): any {
   return (target: any, propertyKey: string) => {
     let jsonPropertyMetadata: JsonPropertyContextConfiguration<T, R> = {
       propertyKey,

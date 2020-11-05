@@ -40,7 +40,7 @@ npm i @witty-services/ts-repository
 ### Configure your models
 
 ````typescript
-import {JsonProperty} from '@witty-services/ts-serializer';
+import {JsonProperty, JsonSubTypes} from '@witty-services/ts-serializer';
 import {Address} from './address.model';
 
 export class User { 
@@ -56,6 +56,31 @@ export class User {
 
   @JsonProperty(Address)
   public address: Address;
+}
+
+@JsonSubTypes<Vehicle>({
+  field: 'type',
+  types: {
+    CAR: () => Car,
+    TRUCK: () => Truck
+  }
+})
+abstract class Vehicle {
+
+  @JsonProperty()
+  public name: string;
+}
+
+class Car extends Vehicle {
+
+  @JsonProperty()
+  public seatingCapacity: number;
+}
+
+class Truck extends Vehicle {
+
+  @JsonProperty()
+  public payloadCapacity: number;
 }
 ````
 
@@ -104,7 +129,7 @@ const configuration: NormalizerConfiguration = {
 
 ## API
 
-### JsonPropertyDecorator
+### JsonProperty
 
 Argument | Type | Required | Description
 ---------|------|----------|------------
@@ -119,6 +144,19 @@ type | Type | No | You can provide a type to convert json data to an object of T
 readOnly | boolean | No | You can want to use the attribute configuration just in deserialization process
 writeOnly | boolean | No | You can want to use the attribute configuration just in serialization process
 customConverter | Converter | You can use a custom converter object of type [Converter](#converter) to convert your object
+
+### JsonSubTypes
+
+Argument | Type | Required | Description
+---------|------|----------|------------
+jsonSubTypesContext | [JsonSubTypesContext](#jsonsubtypescontext) | Yes | This argument set up the sub types informations
+
+### JsonSubTypesContext
+
+Attribute | Type | Required | Description
+----------|------|----------|------------
+field | string | Yes | The path of the field which determine which type choose
+types | {[key: string]: Type} | Yes | All possibles types indexed by field values
 
 ### NormalizerConfiguration
 
