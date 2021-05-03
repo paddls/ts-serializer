@@ -1,11 +1,11 @@
-import {Normalizer} from './normalizer/normalizer';
-import {Denormalizer} from './normalizer/denormalizer';
 import {SerializeType} from './common';
+import {ISerializer} from './iserializer';
+import {IDeserializer} from './ideserializer';
 
-export class Serializer {
+export class Serializer implements ISerializer, IDeserializer {
 
-  public constructor(private readonly normalizer: Normalizer,
-                     private readonly denormalizer: Denormalizer) {
+  public constructor(private readonly normalizer: ISerializer,
+                     private readonly denormalizer: IDeserializer) {
     if (!this.normalizer) {
       throw new Error('You must provide a normalizer.');
     }
@@ -16,26 +16,18 @@ export class Serializer {
   }
 
   public serialize<T>(object: T): any {
-    return this.normalizer.normalize(object);
+    return this.normalizer.serialize(object);
   }
 
   public serializeAll<T>(objects: T[]): any[] {
-    if (!Array.isArray(objects)) {
-      throw new Error(`${objects} is not an array.`);
-    }
-
-    return objects.map((value: T) => this.serialize(value));
+    return this.normalizer.serializeAll(objects);
   }
 
-  public deserialize<T>(type: SerializeType<T>, data: any): T {
-    return this.denormalizer.denormalize<T>(type, data);
+  public deserialize<T>(type: SerializeType<T>|SerializeType<any>[], data: any): T {
+    return this.denormalizer.deserialize<T>(type, data);
   }
 
-  public deserializeAll<T>(type: SerializeType<T>, data: any[]): T[] {
-    if (!Array.isArray(data)) {
-      throw new Error(`${data} is not an array.`);
-    }
-
-    return data.map((value: any) => this.deserialize(type, value));
+  public deserializeAll<T>(type: SerializeType<T>|SerializeType<any>[], data: any[]): T[] {
+    return this.denormalizer.deserializeAll(type, data);
   }
 }

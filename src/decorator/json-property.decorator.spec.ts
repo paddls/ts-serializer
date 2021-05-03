@@ -44,6 +44,13 @@ describe('JsonPropertyDecorator', () => {
     expect(Reflect.getMetadata(JSON_PROPERTY_METADATA_KEY, obj)[0].type()).toBe(Date);
   });
 
+  it('should set up with multiple types', () => {
+    JsonProperty(() => [Date, Map])(obj, 'myThirdProperty');
+    expect(Reflect.getMetadata(JSON_PROPERTY_METADATA_KEY, obj).length).toEqual(1);
+    expect(Reflect.getMetadata(JSON_PROPERTY_METADATA_KEY, obj)[0].type instanceof Function).toBe(true);
+    expect(Reflect.getMetadata(JSON_PROPERTY_METADATA_KEY, obj)[0].type()).toEqual([Date, Map]);
+  });
+
   it('should set up with nothing', () => {
     JsonProperty()(obj, 'myFourthProperty');
     expect(Reflect.getMetadata(JSON_PROPERTY_METADATA_KEY, obj)).toEqual([
@@ -52,11 +59,11 @@ describe('JsonPropertyDecorator', () => {
   });
 
   it('should set up two properties', () => {
-    JsonProperty(() => Date)(obj, 'myThirdProperty');
+    JsonProperty({type: () => [Date]})(obj, 'myThirdProperty');
     JsonProperty()(obj, 'myFourthProperty');
     expect(Reflect.getMetadata(JSON_PROPERTY_METADATA_KEY, obj).length).toEqual(2);
     expect(Reflect.getMetadata(JSON_PROPERTY_METADATA_KEY, obj)[0].type instanceof Function).toBe(true);
-    expect(Reflect.getMetadata(JSON_PROPERTY_METADATA_KEY, obj)[0].type()).toBe(Date);
+    expect(Reflect.getMetadata(JSON_PROPERTY_METADATA_KEY, obj)[0].type()).toEqual([Date]);
     expect(Reflect.getMetadata(JSON_PROPERTY_METADATA_KEY, obj)[1]).toEqual(fourthResult);
   });
 

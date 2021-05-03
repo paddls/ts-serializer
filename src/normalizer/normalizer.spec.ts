@@ -4,7 +4,6 @@ import {DEFAULT_NORMALIZER_CONFIGURATION, NormalizerConfiguration} from './norma
 import {JsonProperty} from '../decorator/json-property.decorator';
 import {DateConverter} from '../converter/date.converter';
 import {cloneDeep} from 'lodash';
-import {Denormalizer} from './denormalizer';
 
 class EmptyJsonProperty {
   public name: string = 'myEmptyJsonPropertyObject';
@@ -23,82 +22,108 @@ describe('Normalizer', () => {
     normalizer = new Normalizer(configuration);
   });
 
-  it('should have a default configuration', () => {
-    class MyNormalizer extends Normalizer {
-      public getConfiguration(): NormalizerConfiguration {
-        return this.configuration;
+  describe('#serialize', () => {
+    it('should have a default configuration', () => {
+      class MyNormalizer extends Normalizer {
+        public getConfiguration(): NormalizerConfiguration {
+          return this.configuration;
+        }
       }
-    }
 
-    const myNormalizer: MyNormalizer = new MyNormalizer();
-    expect(myNormalizer.getConfiguration()).toEqual(DEFAULT_NORMALIZER_CONFIGURATION);
+      const myNormalizer: MyNormalizer = new MyNormalizer();
+      expect(myNormalizer.getConfiguration()).toEqual(DEFAULT_NORMALIZER_CONFIGURATION);
+    });
+
+    it('should normalize an object with no json property', () => {
+      expect(normalizerEmptyJsonProperty.serialize(new EmptyJsonProperty())).toEqual({});
+    });
+
+    it('should not normalize json property with readOnly parameter', () => {
+      class MyClass extends ClassWithJsonProperty {
+
+        @JsonProperty({field: 'name', readOnly: true})
+        public name: string = 'test';
+      }
+
+      const obj: MyClass = new MyClass();
+
+      expect(normalizer.serialize(obj)).toEqual({});
+    });
+
+    it('should not normalize json property with a value to undefined with falsy configuration', () => {
+      class MyClass extends ClassWithJsonProperty {
+
+        @JsonProperty()
+        public name: string = undefined;
+      }
+
+      const obj: MyClass = new MyClass();
+
+      expect(normalizer.serialize(obj)).toEqual({});
+    });
+
+    it('should not normalize json property with a value to null with falsy configuration and with normalize undefined truthy', () => {
+      class MyClass extends ClassWithJsonProperty {
+
+        @JsonProperty()
+        public name: string = null;
+      }
+
+      const obj: MyClass = new MyClass();
+      configuration.normalizeUndefined = true;
+
+      expect(normalizer.serialize(obj)).toEqual({});
+    });
+
+    it('should normalize json property with a value to null with falsy configuration and with column configuration truthy', () => {
+      class MyClass {
+
+        @JsonProperty({normalizeNull: true, normalizeUndefined: false})
+        public name: string;
+      }
+
+      const obj: MyClass = new MyClass();
+      obj.name = null;
+
+      expect(normalizer.serialize(obj)).toEqual({name: null});
+    });
+
+    it('should normalize json property with a value to undefined with falsy configuration and with column configuration truthy', () => {
+      class MyClass {
+
+        @JsonProperty({normalizeNull: false, normalizeUndefined: true})
+        public name: string;
+      }
+
+      const obj: MyClass = new MyClass();
+      obj.name = undefined;
+
+      expect(normalizer.serialize(obj)).toEqual({name: undefined});
+    });
   });
 
-  it('should normalize an object with no json property', () => {
-    expect(normalizerEmptyJsonProperty.normalize(new EmptyJsonProperty())).toEqual({});
-  });
+  describe('#serializeAll', () => {
+    class Mock {
 
-  it('should not normalize json property with readOnly parameter', () => {
-    class MyClass extends ClassWithJsonProperty {
-
-      @JsonProperty({field: 'name', readOnly: true})
-      public name: string = 'test';
+      private id: string;
     }
 
-    const obj: MyClass = new MyClass();
+    it('should call x times serialize when serializeAll is called with array', () => {
+      const toBeNormalize: Mock[] = [new Mock(), new Mock()];
+      const data: any = [{}, {}];
+      spyOn(normalizer, 'serialize').and.returnValues(...data);
 
-    expect(normalizer.normalize(obj)).toEqual({});
-  });
+      expect(normalizer.serializeAll(toBeNormalize)).toEqual(data);
+      expect(normalizer.serialize).toHaveBeenCalledTimes(2);
+      expect(normalizer.serialize).toHaveBeenCalledWith(toBeNormalize[0]);
+      expect(normalizer.serialize).toHaveBeenCalledWith(toBeNormalize[1]);
+    });
 
-  it('should not normalize json property with a value to undefined with falsy configuration', () => {
-    class MyClass extends ClassWithJsonProperty {
+    it('should throw an error when serializeAll is called with non array value', () => {
+      const toBeNormalize: any = new Mock();
 
-      @JsonProperty()
-      public name: string = undefined;
-    }
-
-    const obj: MyClass = new MyClass();
-
-    expect(normalizer.normalize(obj)).toEqual({});
-  });
-
-  it('should not normalize json property with a value to null with falsy configuration and with normalize undefined truthy', () => {
-    class MyClass extends ClassWithJsonProperty {
-
-      @JsonProperty()
-      public name: string = null;
-    }
-
-    const obj: MyClass = new MyClass();
-    configuration.normalizeUndefined = true;
-
-    expect(normalizer.normalize(obj)).toEqual({});
-  });
-
-  it('should normalize json property with a value to null with falsy configuration and with column configuration truthy', () => {
-    class MyClass {
-
-      @JsonProperty({normalizeNull: true, normalizeUndefined: false})
-      public name: string;
-    }
-
-    const obj: MyClass = new MyClass();
-    obj.name = null;
-
-    expect(normalizer.normalize(obj)).toEqual({name: null});
-  });
-
-  it('should normalize json property with a value to undefined with falsy configuration and with column configuration truthy', () => {
-    class MyClass {
-
-      @JsonProperty({normalizeNull: false, normalizeUndefined: true})
-      public name: string;
-    }
-
-    const obj: MyClass = new MyClass();
-    obj.name = undefined;
-
-    expect(normalizer.normalize(obj)).toEqual({name: undefined});
+      expect(() => normalizer.serializeAll(toBeNormalize)).toThrowError(`${toBeNormalize} is not an array.`);
+    });
   });
 
   describe('Normalize value with all normalize configuration truthy', () => {
@@ -134,7 +159,7 @@ describe('Normalizer', () => {
 
     it('should normalize to null a json property with a type and a null value', () => {
       const obj: MyClass = new MyClass();
-      expect(normalizer.normalize(obj)).toEqual({
+      expect(normalizer.serialize(obj)).toEqual({
         nested: null,
         nesteds: null
       });
@@ -143,7 +168,7 @@ describe('Normalizer', () => {
     it('should normalize to empty array a json property with a type and a empty array value', () => {
       const obj: MyClass = new MyClass();
       obj.nesteds = [];
-      expect(normalizer.normalize(obj)).toEqual({
+      expect(normalizer.serialize(obj)).toEqual({
         nested: null,
         nesteds: []
       });
@@ -165,7 +190,7 @@ describe('Normalizer', () => {
       const d2: Date = new Date();
       obj.nesteds[0].otherDates = [d1, d2];
 
-      expect(normalizer.normalize(obj)).toEqual({
+      expect(normalizer.serialize(obj)).toEqual({
         nested: {
           complexNested: {
             nestedName: 'toto'
@@ -199,7 +224,7 @@ describe('Normalizer', () => {
 
       const obj: MyClass = new MyClass();
       obj.name = null;
-      expect(normalizer.normalize(obj)).toEqual({});
+      expect(normalizer.serialize(obj)).toEqual({});
     });
 
     it('should not normalize json property with a value to undefined with truthy configuration and with column configuration falsy', () => {
@@ -211,7 +236,7 @@ describe('Normalizer', () => {
 
       const obj: MyClass = new MyClass();
       obj.name = undefined;
-      expect(normalizer.normalize(obj)).toEqual({});
+      expect(normalizer.serialize(obj)).toEqual({});
     });
   });
 });

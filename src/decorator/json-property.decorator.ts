@@ -7,7 +7,7 @@ export interface JsonPropertyContext<T, R> {
 
   field?: string;
 
-  type?: () => SerializeType<T>;
+  type?: () => SerializeType<T>|SerializeType<T>[];
 
   readOnly?: boolean;
 
@@ -29,7 +29,7 @@ export interface JsonPropertyContextConfiguration<T, R> extends JsonPropertyCont
   propertyKey: string;
 }
 
-export function JsonProperty<T, R>(jsonPropertyContext?: JsonPropertyContext<T, R>|string|(() => SerializeType<T>)): any {
+export function JsonProperty<T = any, R = any>(jsonPropertyContext?: JsonPropertyContext<T, R>|string|(() => SerializeType<T>|SerializeType<any>[])): any {
   return (target: any, propertyKey: string) => {
     let jsonPropertyMetadata: JsonPropertyContextConfiguration<T, R> = {
       propertyKey,
@@ -37,6 +37,7 @@ export function JsonProperty<T, R>(jsonPropertyContext?: JsonPropertyContext<T, 
     };
 
     if (typeof jsonPropertyContext === 'object') {
+
       if (jsonPropertyContext.type && jsonPropertyContext.customConverter) {
         throw new Error('You cannot specify both the converter and type attributes at the same time.');
       }
@@ -45,6 +46,7 @@ export function JsonProperty<T, R>(jsonPropertyContext?: JsonPropertyContext<T, 
       if (!!jsonPropertyContext.field && jsonPropertyContext.field !== '') {
         jsonPropertyMetadata.field = jsonPropertyContext.field;
       }
+
     } else if (typeof jsonPropertyContext === 'string') {
       jsonPropertyMetadata.field = jsonPropertyContext;
     } else if (typeof jsonPropertyContext === 'function') {
