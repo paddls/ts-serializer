@@ -1,5 +1,6 @@
 import {JSON_PROPERTY_METADATA_KEY, JsonPropertyContextConfiguration} from '../decorator/json-property.decorator';
-import {isArray, set} from 'lodash-es';
+import isArray from 'lodash-es/isArray';
+import set from 'lodash-es/set';
 import {DEFAULT_NORMALIZER_CONFIGURATION, NormalizerConfiguration} from './normalizer.configuration';
 import {ISerializer} from '../iserializer';
 
