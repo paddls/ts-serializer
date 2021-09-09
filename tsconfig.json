@@ -8,8 +8,7 @@
     "outDir": "./dist",
     "target": "es5",
     "moduleResolution": "node",
-    "experimentalDecorators": true,
-    "esModuleInterop": true
+    "experimentalDecorators": true
   },
   "typedocOptions": {
     "mode": "modules",
