@@ -3,7 +3,7 @@ import {Normalizer} from './normalizer';
 import {DEFAULT_NORMALIZER_CONFIGURATION, NormalizerConfiguration} from './normalizer.configuration';
 import {JsonProperty} from '../decorator/json-property.decorator';
 import {DateConverter} from '../converter/date.converter';
-import cloneDeep from 'lodash-es/cloneDeep';
+import {cloneDeep} from 'lodash';
 
 class EmptyJsonProperty {
   public name: string = 'myEmptyJsonPropertyObject';

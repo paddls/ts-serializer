@@ -1,10 +1,9 @@
-import isArray from 'lodash-es/isArray';
-import get from 'lodash-es/get';
 import {JSON_PROPERTY_METADATA_KEY, JsonPropertyContextConfiguration} from '../decorator/json-property.decorator';
 import {DEFAULT_NORMALIZER_CONFIGURATION, NormalizerConfiguration} from './normalizer.configuration';
 import {SerializeType} from '../common';
 import {IDeserializer} from '../ideserializer';
 import {JSON_TYPE_SUPPORTS_METADATA_KEY} from '../decorator/json-type-supports.decorator';
+import {get, isArray} from 'lodash';
 
 export class Denormalizer implements IDeserializer {
 

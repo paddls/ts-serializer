@@ -9,7 +9,10 @@
     "target": "es5",
     "moduleResolution": "node",
     "experimentalDecorators": true,
-    "esModuleInterop": true
+    "baseUrl": ".",
+    "paths": {
+      "lodash": ["src/lodash.ts"],
+    }
   },
   "typedocOptions": {
     "mode": "modules",
@@ -22,5 +25,5 @@
     "node_modules",
     "dist",
     "src/**/*.spec.*"
-  ]
+  ],
 }
