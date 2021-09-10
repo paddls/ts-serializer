@@ -9,10 +9,7 @@
     "target": "es5",
     "moduleResolution": "node",
     "experimentalDecorators": true,
-    "baseUrl": ".",
-    "paths": {
-      "lodash": ["src/lodash.ts"],
-    }
+    "esModuleInterop": true
   },
   "typedocOptions": {
     "mode": "modules",

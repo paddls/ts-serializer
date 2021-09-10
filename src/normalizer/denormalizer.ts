@@ -3,7 +3,7 @@ import {DEFAULT_NORMALIZER_CONFIGURATION, NormalizerConfiguration} from './norma
 import {SerializeType} from '../common';
 import {IDeserializer} from '../ideserializer';
 import {JSON_TYPE_SUPPORTS_METADATA_KEY} from '../decorator/json-type-supports.decorator';
-import {get, isArray} from 'lodash';
+import {get, isArray} from 'lodash-es';
 
 export class Denormalizer implements IDeserializer {
 
