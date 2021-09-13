@@ -4,7 +4,7 @@ import {DEFAULT_NORMALIZER_CONFIGURATION, NormalizerConfiguration} from './norma
 import {JsonProperty} from '../decorator/json-property.decorator';
 import {DateConverter} from '../converter/date.converter';
 import {JsonTypeSupports} from '../decorator/json-type-supports.decorator';
-import {cloneDeep} from 'lodash-es';
+import cloneDeep from 'lodash-es/cloneDeep';
 
 class EmptyJsonProperty {
   public name: string = 'myEmptyJsonPropertyObject';
