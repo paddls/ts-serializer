@@ -9,7 +9,7 @@
 ![GitHub issues](https://img.shields.io/github/issues/witty-services/ts-serializer)
 ![GitHub top language](https://img.shields.io/github/languages/top/witty-services/ts-serializer)
 
-This Typescript library to manage serialization and deserialization in a Typescript program. It use decorator to configure serialization and deserialization.
+Serialize and deserialize JSON into strongly typed typescript objects using decorators.
 
 ## Summary
 
@@ -18,19 +18,18 @@ This Typescript library to manage serialization and deserialization in a Typescr
     * [Configure your models](#configure-your-models)
     * [Serialization](#serialization)
     * [Deserialization](#deserialization)
-    * [Serialization configuration](#serialization-configuration)
+    * [Serialization configuration](#serializer-configuration)
 * [API](#api)
-    * [JsonPropertyDecorator](#jsonpropertydecorator)
-    * [JsonPropertyContext](#jsonpropertycontext)
+  * [JsonPropertyDecorator](#jsonproperty)
+  * [JsonPropertyContext](#jsonpropertycontext)
     * [JsonTypeSupports](#jsontypesupports)
     * [NormalizerConfiguration](#normalizerconfiguration)
     * [CustomConverter](#customconverter)
 * [How to run Unit Tests](#how-to-run-unit-tests)
 
-
 ## How to install
 
-To install the library run :
+To install the library, run :
 
 ```
 npm i @witty-services/ts-repository
@@ -44,7 +43,7 @@ npm i @witty-services/ts-repository
 import {JsonProperty, JsonTypeSupports} from '@witty-services/ts-serializer';
 import {Address} from './address.model';
 
-export class User { 
+export class User {
 
   @JsonProperty({readOnly: true})
   public id: string;
@@ -57,10 +56,10 @@ export class User {
 
   @JsonProperty(Address)
   public address: Address;
-  
+
   @JsonProperty(() => [Car, Truck])
   public vehicles: Vehicle[];
-  
+
   @JsonProperty({groups: ['WithAge', 'OtherGroup']})
   public age: number;
 
@@ -74,14 +73,14 @@ abstract class Vehicle {
   public name: string;
 }
 
-@JsonTypeSupports((data: { type: 'CAR'|'TRUCK' }) => data.type === 'CAR')
+@JsonTypeSupports((data: { type: 'CAR' | 'TRUCK' }) => data.type === 'CAR')
 class Car extends Vehicle {
 
   @JsonProperty()
   public seatingCapacity: number;
 }
 
-@JsonTypeSupports((data: { type: 'CAR'|'TRUCK' }) => data.type === 'TRUCK')
+@JsonTypeSupports((data: { type: 'CAR' | 'TRUCK' }) => data.type === 'TRUCK')
 class Truck extends Vehicle {
 
   @JsonProperty()
@@ -89,7 +88,7 @@ class Truck extends Vehicle {
 }
 ````
 
-You can find the full json property decorator configuration in [API](#API) section.
+You can find the full ``@JsonProperty()`` decorator configuration in [API](#API) section.
 
 ### Serialization
 
@@ -110,6 +109,7 @@ import {Serializer, Normalizer, Denormalizer} from '@witty-services/ts-serialize
 class MyClass {
   // ...
 }
+
 const data: any = {};
 
 
@@ -119,7 +119,7 @@ const myObject: MyClass = serializer.deserialize(MyClass, data);
 
 ### Serializer configuration
 
-You can configure serializer via an object like that :
+You can configure serializer using ``NormalizerConfiguration`` class :
 
 ````typescript
 import {NormalizerConfiguration} from '@witty-services/ts-serializer';
@@ -134,8 +134,9 @@ const configuration: NormalizerConfiguration = {
 
 ### Groups
 
-You can use groups to restrict the serialization/deserialization process. Without any options provided to serializer, groups configuration aren't not used.
-But if you want to use groups defined in JsonProperty decorator, you can use them like this :
+You can use groups to restrict the serialization/deserialization process. Without any options provided to serializer,
+groups configuration aren't used. But if you want to use groups defined in JsonProperty decorator, you can use them like
+this :
 
 ```typescript
 import {Serializer, Normalizer, Denormalizer} from '@witty-services/ts-serializer';
@@ -171,48 +172,49 @@ const myObject: MyClass = serializer.deserialize(MyClass, data, {groups: ['Group
 
 ### JsonProperty
 
-Argument | Type | Required | Description
----------|------|----------|------------
-jsonPropertyContext | [JsonPropertyContext](#jsonpropertycontext) &#124; string &#124; Type | No | If no argument is provide, the attribute will be mapped with a field in json object with the same name.<br/> If argument is a string, the attribute will be mapped with a field in json object named with the provided string.<br/> If argument is a type, the attribute will be mapped with a field in json object with the same name, but the type provide is use to make the transformation.
+| Argument            | Type                                                                  | Required   | Description                                                                                                                                                                                                                                                                                                                                                                                                     |
+|----------           | ------                                                                | ---------- | ------------                                                                                                                                                                                                                                                                                                                                                                                                    |
+| jsonPropertyContext | [JsonPropertyContext](#jsonpropertycontext) &#124; string &#124; Type | No         | If no argument is provided, the attribute will be mapped with a field in json object with the same name.<br/> If the argument is a string, the attribute will be mapped with a field in json object named with the provided string.<br/> If the argument is a type, the attribute will be mapped with a field in json object with the same name, but the type provided will be used to make the transformation. |
 
 ### JsonPropertyContext
 
-Attribute | Type | Required | Description
-----------|------|----------|------------
-field | string | No | You can change the name of mapped field. The attribute accept a path ``` 'path.to.myField' ```
-type | Function<Type> | No | You can provide a type to convert json data to an object of Type or convert an object of Type to json data using Type configuration
-readOnly | boolean | No | You can want to use the attribute configuration just in deserialization process
-writeOnly | boolean | No | You can want to use the attribute configuration just in serialization process
-customConverter | Converter | No | You can use a custom converter object of type [Converter](#converter) to convert your object
-groups | string &#124; string[] | No | You can restrict serialization/deserialization process with groups
+| Attribute       | Type                   | Required   | Description                                                                                                                         |
+|-----------      | ------                 | ---------- | ------------                                                                                                                        |
+| field           | string                 | No         | You can change the name of mapped field. The attribute accept a path ``` 'path.to.myField' ```                                      |
+| type            | Function<Type>         | No         | You can provide a type to convert json data to an object of Type or convert an object of Type to json data using Type configuration |
+| readOnly        | boolean                | No         | You can want to use the attribute configuration only in the deserialization process                                                 |
+| writeOnly       | boolean                | No         | You can want to use the attribute configuration only in the serialization process                                                   |
+| customConverter | Converter              | No         | You can add a custom converter object of type [Converter](#converter) to convert your object                                        |
+| groups          | string &#124; string[] | No         | You can restrict serialization/deserialization process with groups                                                                  |
 
 ### JsonTypeSupports
 
-Argument | Type | Required | Description
----------|------|----------|------------
-context | Function<boolean> | Yes | This argument set up the function to call when serializer search a type which matches with data receive
+| Argument  | Type              | Required   | Description                                                                                                     |
+|---------- | ------            | ---------- | ------------                                                                                                    |
+| context   | Function<boolean> | Yes        | This argument sets up the function to call when the serializer searches a type which matches with received data |
 
 ### NormalizerConfiguration
 
-Attribute | Type | Required | Default value | Description
-----------|------|----------|---------------|------------
-denormalizerNull | boolean | No | false | Configuration denormalizer to no denormalize null value
-denormalizeUndefined | boolean | No | false | Configuration denormalizer to no denormalize undefined value
-normalizeNull | boolean | No | false | Configuration normalizer to no normalize null value
-normalizeUndefined | boolean | No | false | Configuration normalizer to no normalize undefined value
+| Attribute            | Type    | Required   | Default value   | Description                                                    |
+|-----------           | ------  | ---------- | --------------- | ------------                                                   |
+| denormalizerNull     | boolean | No         | false           | Denormalizer configuration to not denormalize null values      |
+| denormalizeUndefined | boolean | No         | false           | Denormalizer configuration to not denormalize undefined values |
+| normalizeNull        | boolean | No         | false           | Normalizer configuration to not normalize null values          |
+| normalizeUndefined   | boolean | No         | false           | Normalizer configuration to not normalize undefined values     |
 
-### CustomConverter 
+### CustomConverter
 
-CustomConverter is an interface to make some converter.
-TS-Serializer, provide a DateConverter to convert a date to an ISOString and an ISOString to a date.
+``CustomConverter`` is an interface to make some converter. TS-Serializer provides a ``DateConverter`` to convert a date
+to an ISOString and an ISOString to a date.
 
 ### SerializerOptions
 
-SerializerOptions is an interface which represents optional options to provide to serialization/deserialization process.
+``SerializerOptions`` is an interface which represents optional options to provide to serialization/deserialization
+process.
 
-Attribute | Type | Required | Default value | Description
-----------|------|----------|---------------|------------
-groups | string &#124; string[] | No | undefined | Groups to use in serialization/deserialization process
+| Attribute  | Type                   | Required   | Default value   | Description                                            |
+|----------- | ------                 | ---------- | --------------- | ------------                                           |
+| groups     | string &#124; string[] | No         | undefined       | Groups to use in serialization/deserialization process |
 
 ## How to run Unit Tests
 
