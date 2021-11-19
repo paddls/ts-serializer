@@ -44,6 +44,18 @@ describe('JsonPropertyDecorator', () => {
     expect(Reflect.getMetadata(JSON_PROPERTY_METADATA_KEY, obj)[0].type()).toBe(Date);
   });
 
+  it('should set up with a group', () => {
+    JsonProperty({groups: 'myGroup'})(obj, 'myThirdProperty');
+    expect(Reflect.getMetadata(JSON_PROPERTY_METADATA_KEY, obj).length).toEqual(1);
+    expect(Reflect.getMetadata(JSON_PROPERTY_METADATA_KEY, obj)[0].groups).toStrictEqual(['myGroup']);
+  });
+
+  it('should set up with some groups', () => {
+    JsonProperty({groups: ['myGroup', 'otherGroup']})(obj, 'myThirdProperty');
+    expect(Reflect.getMetadata(JSON_PROPERTY_METADATA_KEY, obj).length).toEqual(1);
+    expect(Reflect.getMetadata(JSON_PROPERTY_METADATA_KEY, obj)[0].groups).toStrictEqual(['myGroup', 'otherGroup']);
+  });
+
   it('should set up with multiple types', () => {
     JsonProperty(() => [Date, Map])(obj, 'myThirdProperty');
     expect(Reflect.getMetadata(JSON_PROPERTY_METADATA_KEY, obj).length).toEqual(1);

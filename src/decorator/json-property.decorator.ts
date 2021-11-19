@@ -1,5 +1,6 @@
 import {Converter} from '../converter/converter';
 import {ConstructorFunction, SerializeType} from '../common';
+import isArray from 'lodash-es/isArray';
 
 export const JSON_PROPERTY_METADATA_KEY: string = 'ts-serializer:json-properties';
 
@@ -22,6 +23,8 @@ export interface JsonPropertyContext<T, R> {
   normalizeNull?: boolean;
 
   normalizeUndefined?: boolean;
+
+  groups?: string | string[];
 }
 
 export interface JsonPropertyContextConfiguration<T, R> extends JsonPropertyContext<T, R> {
@@ -45,6 +48,10 @@ export function JsonProperty<T = any, R = any>(jsonPropertyContext?: JsonPropert
       jsonPropertyMetadata = {...jsonPropertyMetadata, ...jsonPropertyContext};
       if (!!jsonPropertyContext.field && jsonPropertyContext.field !== '') {
         jsonPropertyMetadata.field = jsonPropertyContext.field;
+      }
+
+      if (!!jsonPropertyMetadata.groups && !isArray(jsonPropertyMetadata.groups)) {
+        jsonPropertyMetadata.groups = [jsonPropertyMetadata.groups];
       }
 
     } else if (typeof jsonPropertyContext === 'string') {

@@ -3,7 +3,12 @@ import 'reflect-metadata';
 export {Converter} from './converter/converter';
 export {DateConverter} from './converter/date.converter';
 
-export {JsonProperty, JsonPropertyContext, JsonPropertyContextConfiguration, JSON_PROPERTY_METADATA_KEY} from './decorator/json-property.decorator';
+export {
+  JsonProperty,
+  JsonPropertyContext,
+  JsonPropertyContextConfiguration,
+  JSON_PROPERTY_METADATA_KEY
+} from './decorator/json-property.decorator';
 
 export {JsonTypeSupports, JSON_TYPE_SUPPORTS_METADATA_KEY} from './decorator/json-type-supports.decorator';
 
@@ -18,3 +23,5 @@ export {IDeserializer} from './ideserializer';
 export {ISerializer} from './iserializer';
 
 export {Serializer} from './serializer';
+
+export {SerializerOptions, normalizeSerializerOptions} from './serializer-options';

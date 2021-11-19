@@ -16,7 +16,7 @@
     "max-classes-per-file": false,
     "max-line-length": [
       true,
-      200
+      250
     ],
     "member-access": [true, "check-accessor", "check-constructor"],
     "member-ordering": [

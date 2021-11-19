@@ -4,7 +4,9 @@ import {SerializeType} from '../common';
 import {IDeserializer} from '../ideserializer';
 import {JSON_TYPE_SUPPORTS_METADATA_KEY} from '../decorator/json-type-supports.decorator';
 import isArray from 'lodash-es/isArray';
-import get from 'lodash/get';
+import get from 'lodash-es/get';
+import intersection from 'lodash-es/intersection';
+import {normalizeSerializerOptions, SerializerOptions} from '../serializer-options';
 
 export class Denormalizer implements IDeserializer {
 
@@ -18,61 +20,11 @@ export class Denormalizer implements IDeserializer {
     return globalDenormalizeConfiguration;
   }
 
-  public deserialize<T>(type: SerializeType<T>|SerializeType<any>[], data: any): T|null {
-    if (!data) {
-      return null;
-    }
-
-    const result: T = this.instantiateObject(type, data);
-
-    if (!result) {
-      throw new Error('No type to instantiate');
-    }
-
-    const jsonProperties: JsonPropertyContextConfiguration<T, any>[] = Reflect.getMetadata(JSON_PROPERTY_METADATA_KEY, result);
-
-    if (!jsonProperties) {
-      return result;
-    }
-
-    jsonProperties.forEach((cc: JsonPropertyContextConfiguration<T, any>) => {
-      if (cc.writeOnly) {
-        return;
-      }
-
-      const jsonPropertyData: any = get(data, cc.field);
-
-      if (jsonPropertyData === undefined && !Denormalizer.haveToDenormalize(this.configuration.denormalizeUndefined, cc.denormalizeUndefined)) {
-        return;
-      }
-
-      if (jsonPropertyData === null && !Denormalizer.haveToDenormalize(this.configuration.denormalizeNull, cc.denormalizeNull)) {
-        return;
-      }
-
-      if (isArray(jsonPropertyData)) {
-        if (cc.type) {
-          result[cc.propertyKey] = this.deserializeAll(cc.type(), jsonPropertyData);
-        } else if (cc.customConverter) {
-          result[cc.propertyKey] = jsonPropertyData.map((d: any) => new (cc.customConverter())().fromJson(d, this));
-        } else {
-          result[cc.propertyKey] = jsonPropertyData;
-        }
-      } else {
-        if (cc.type && !!jsonPropertyData) {
-          result[cc.propertyKey] = this.deserialize(cc.type(), jsonPropertyData);
-        } else if (cc.customConverter) {
-          result[cc.propertyKey] = new (cc.customConverter())().fromJson(jsonPropertyData, this);
-        } else {
-          result[cc.propertyKey] = jsonPropertyData;
-        }
-      }
-    });
-
-    return result;
+  public deserialize<T>(type: SerializeType<T>|SerializeType<any>[], data: any, options: SerializerOptions = {}): T|null {
+    return this.processing(type, data, normalizeSerializerOptions(options));
   }
 
-  public deserializeAll<T>(type: SerializeType<T>|SerializeType<any>[], data: any[]): T[] {
+  public deserializeAll<T>(type: SerializeType<T>|SerializeType<any>[], data: any[], options: SerializerOptions = {}): T[] {
     if (!Array.isArray(data)) {
       throw new Error(`${data} is not an array.`);
     }
@@ -80,7 +32,7 @@ export class Denormalizer implements IDeserializer {
     return data
       .map((value: any) => {
         try {
-          return this.deserialize(type, value);
+          return this.deserialize(type, value, options);
         } catch (ex) {
           return undefined;
         }
@@ -104,5 +56,52 @@ export class Denormalizer implements IDeserializer {
     }
 
     return !!finalType ? new (finalType as new() => T)() : null;
+  }
+
+  private processing<T>(type: SerializeType<T>|SerializeType<any>[], data: any, options: SerializerOptions): T|null {
+    if (!data) {
+      return null;
+    }
+
+    const result: T = this.instantiateObject(type, data);
+
+    if (!result) {
+      throw new Error('No type to instantiate');
+    }
+
+    const jsonProperties: JsonPropertyContextConfiguration<T, any>[] = Reflect.getMetadata(JSON_PROPERTY_METADATA_KEY, result);
+
+    if (!jsonProperties) {
+      return result;
+    }
+
+    jsonProperties
+      .filter((cc: JsonPropertyContextConfiguration<T, any>) => !cc.writeOnly)
+      .filter((cc: JsonPropertyContextConfiguration<T, any>) => !options?.groups || intersection(cc.groups, options.groups).length > 0)
+      .filter((cc: JsonPropertyContextConfiguration<T, any>) => get(data, cc.field) !== undefined || !!Denormalizer.haveToDenormalize(this.configuration.denormalizeUndefined, cc.denormalizeUndefined))
+      .filter((cc: JsonPropertyContextConfiguration<T, any>) => get(data, cc.field) !== null || !!Denormalizer.haveToDenormalize(this.configuration.denormalizeNull, cc.denormalizeNull))
+      .forEach((cc: JsonPropertyContextConfiguration<T, any>) => {
+        const jsonPropertyData: any = get(data, cc.field);
+
+        if (isArray(jsonPropertyData)) {
+          if (cc.type) {
+            result[cc.propertyKey] = this.deserializeAll(cc.type(), jsonPropertyData, options);
+          } else if (cc.customConverter) {
+            result[cc.propertyKey] = jsonPropertyData.map((d: any) => new (cc.customConverter())().fromJson(d, this, options));
+          } else {
+            result[cc.propertyKey] = jsonPropertyData;
+          }
+        } else {
+          if (cc.type && !!jsonPropertyData) {
+            result[cc.propertyKey] = this.deserialize(cc.type(), jsonPropertyData, options);
+          } else if (cc.customConverter) {
+            result[cc.propertyKey] = new (cc.customConverter())().fromJson(jsonPropertyData, this, options);
+          } else {
+            result[cc.propertyKey] = jsonPropertyData;
+          }
+        }
+      });
+
+    return result;
   }
 }

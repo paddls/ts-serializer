@@ -1,6 +1,6 @@
 {
   "name": "@witty-services/ts-serializer",
-  "version": "1.0.7",
+  "version": "1.0.8-rc.0",
   "description": "Typescript serializer library",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

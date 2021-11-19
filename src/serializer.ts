@@ -1,6 +1,7 @@
 import {SerializeType} from './common';
 import {ISerializer} from './iserializer';
 import {IDeserializer} from './ideserializer';
+import {SerializerOptions} from './serializer-options';
 
 export class Serializer implements ISerializer, IDeserializer {
 
@@ -15,19 +16,19 @@ export class Serializer implements ISerializer, IDeserializer {
     }
   }
 
-  public serialize<T>(object: T): any {
-    return this.normalizer.serialize(object);
+  public serialize<T>(object: T, options: SerializerOptions = {}): any {
+    return this.normalizer.serialize(object, options);
   }
 
-  public serializeAll<T>(objects: T[]): any[] {
-    return this.normalizer.serializeAll(objects);
+  public serializeAll<T>(objects: T[], options: SerializerOptions = {}): any[] {
+    return this.normalizer.serializeAll(objects, options);
   }
 
-  public deserialize<T>(type: SerializeType<T>|SerializeType<any>[], data: any): T {
-    return this.denormalizer.deserialize<T>(type, data);
+  public deserialize<T>(type: SerializeType<T>|SerializeType<any>[], data: any, options: SerializerOptions = {}): T {
+    return this.denormalizer.deserialize<T>(type, data, options);
   }
 
-  public deserializeAll<T>(type: SerializeType<T>|SerializeType<any>[], data: any[]): T[] {
-    return this.denormalizer.deserializeAll(type, data);
+  public deserializeAll<T>(type: SerializeType<T>|SerializeType<any>[], data: any[], options: SerializerOptions = {}): T[] {
+    return this.denormalizer.deserializeAll(type, data, options);
   }
 }

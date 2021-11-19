@@ -60,6 +60,12 @@ export class User {
   
   @JsonProperty(() => [Car, Truck])
   public vehicles: Vehicle[];
+  
+  @JsonProperty({groups: ['WithAge', 'OtherGroup']})
+  public age: number;
+
+  @JsonProperty({groups: 'WithSize'})
+  public size: number;
 }
 
 abstract class Vehicle {
@@ -126,13 +132,48 @@ const configuration: NormalizerConfiguration = {
 };
 ````
 
+### Groups
+
+You can use groups to restrict the serialization/deserialization process. Without any options provided to serializer, groups configuration aren't not used.
+But if you want to use groups defined in JsonProperty decorator, you can use them like this :
+
+```typescript
+import {Serializer, Normalizer, Denormalizer} from '@witty-services/ts-serializer';
+import {JsonProperty} from '@witty-services/json-property.decorator';
+
+class MyClass {
+
+  @JsonProperty()
+  public attribute1: string;
+
+  @JsonProperty({groups: 'Group1'})
+  public attribute2: string;
+
+  @JsonProperty({groups: ['Group1', 'Group2']})
+  public attribute3: string;
+
+  @JsonProperty({groups: 'Group3'})
+  public attribute4: string;
+}
+
+const data: any = {
+  //...
+};
+
+
+const serializer: Serializer = new Serializer(new Normalizer(), new Denormalizer());
+const myObject: MyClass = serializer.deserialize(MyClass, data, {groups: ['Group1', 'Group2']});
+
+// here, myObject has only attribute2 and attribute3 valued
+```
+
 ## API
 
 ### JsonProperty
 
 Argument | Type | Required | Description
 ---------|------|----------|------------
-jsonPropertyContext | [JsonPropertyContext](#jsonpropertycontext), string or Type | No | If no argument is provide, the attribute will be mapped with a field in json object with the same name.<br/> If argument is a string, the attribute will be mapped with a field in json object named with the provided string.<br/> If argument is a type, the attribute will be mapped with a field in json object with the same name, but the type provide is use to make the transformation.
+jsonPropertyContext | [JsonPropertyContext](#jsonpropertycontext) &#124; string &#124; Type | No | If no argument is provide, the attribute will be mapped with a field in json object with the same name.<br/> If argument is a string, the attribute will be mapped with a field in json object named with the provided string.<br/> If argument is a type, the attribute will be mapped with a field in json object with the same name, but the type provide is use to make the transformation.
 
 ### JsonPropertyContext
 
@@ -143,6 +184,7 @@ type | Function<Type> | No | You can provide a type to convert json data to an o
 readOnly | boolean | No | You can want to use the attribute configuration just in deserialization process
 writeOnly | boolean | No | You can want to use the attribute configuration just in serialization process
 customConverter | Converter | No | You can use a custom converter object of type [Converter](#converter) to convert your object
+groups | string &#124; string[] | No | You can restrict serialization/deserialization process with groups
 
 ### JsonTypeSupports
 
@@ -163,6 +205,14 @@ normalizeUndefined | boolean | No | false | Configuration normalizer to no norma
 
 CustomConverter is an interface to make some converter.
 TS-Serializer, provide a DateConverter to convert a date to an ISOString and an ISOString to a date.
+
+### SerializerOptions
+
+SerializerOptions is an interface which represents optional options to provide to serialization/deserialization process.
+
+Attribute | Type | Required | Default value | Description
+----------|------|----------|---------------|------------
+groups | string &#124; string[] | No | undefined | Groups to use in serialization/deserialization process
 
 ## How to run Unit Tests
 

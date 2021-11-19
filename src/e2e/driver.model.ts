@@ -18,4 +18,10 @@ export abstract class Driver {
 
   @JsonProperty({customConverter: () => DateConverter})
   public createdAt: Date;
+
+  @JsonProperty({groups: ['WithAge']})
+  public age: number;
+
+  @JsonProperty({groups: 'WithSize'})
+  public size: number;
 }

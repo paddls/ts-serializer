@@ -4,6 +4,7 @@ import {DEFAULT_NORMALIZER_CONFIGURATION, NormalizerConfiguration} from './norma
 import {JsonProperty} from '../decorator/json-property.decorator';
 import {DateConverter} from '../converter/date.converter';
 import cloneDeep from 'lodash-es/cloneDeep';
+import {SerializerOptions} from '../serializer-options';
 
 class EmptyJsonProperty {
   public name: string = 'myEmptyJsonPropertyObject';
@@ -12,6 +13,7 @@ class EmptyJsonProperty {
 class ClassWithJsonProperty {}
 
 describe('Normalizer', () => {
+  const defaultOptions: SerializerOptions = {};
   let configuration: NormalizerConfiguration;
   let normalizerEmptyJsonProperty: Normalizer;
   let normalizer: Normalizer;
@@ -23,6 +25,7 @@ describe('Normalizer', () => {
   });
 
   describe('#serialize', () => {
+
     it('should have a default configuration', () => {
       class MyNormalizer extends Normalizer {
         public getConfiguration(): NormalizerConfiguration {
@@ -48,6 +51,42 @@ describe('Normalizer', () => {
       const obj: MyClass = new MyClass();
 
       expect(normalizer.serialize(obj)).toEqual({});
+    });
+
+    it('should not normalize json property with bad configuration group', () => {
+      class MyClass extends ClassWithJsonProperty {
+
+        @JsonProperty({field: 'name', groups: 'Group1'})
+        public name: string = 'test';
+      }
+
+      const obj: MyClass = new MyClass();
+
+      expect(normalizer.serialize(obj, {groups: ['MyGroup2', 'MyGroup3']})).toEqual({});
+    });
+
+    it('should normalize json property with good configuration group', () => {
+      class MyClass extends ClassWithJsonProperty {
+
+        @JsonProperty({groups: 'Group1'})
+        public name: string = 'test';
+      }
+
+      const obj: MyClass = new MyClass();
+
+      expect(normalizer.serialize(obj, {groups: 'Group1'})).toEqual({name: 'test'});
+    });
+
+    it('should normalize json property without options group', () => {
+      class MyClass extends ClassWithJsonProperty {
+
+        @JsonProperty({groups: 'Group1'})
+        public name: string = 'test';
+      }
+
+      const obj: MyClass = new MyClass();
+
+      expect(normalizer.serialize(obj)).toEqual({name: 'test'});
     });
 
     it('should not normalize json property with a value to undefined with falsy configuration', () => {
@@ -115,8 +154,8 @@ describe('Normalizer', () => {
 
       expect(normalizer.serializeAll(toBeNormalize)).toEqual(data);
       expect(normalizer.serialize).toHaveBeenCalledTimes(2);
-      expect(normalizer.serialize).toHaveBeenCalledWith(toBeNormalize[0]);
-      expect(normalizer.serialize).toHaveBeenCalledWith(toBeNormalize[1]);
+      expect(normalizer.serialize).toHaveBeenCalledWith(toBeNormalize[0], defaultOptions);
+      expect(normalizer.serialize).toHaveBeenCalledWith(toBeNormalize[1], defaultOptions);
     });
 
     it('should throw an error when serializeAll is called with non array value', () => {

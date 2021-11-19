@@ -5,6 +5,7 @@ import {JsonProperty} from '../decorator/json-property.decorator';
 import {DateConverter} from '../converter/date.converter';
 import {JsonTypeSupports} from '../decorator/json-type-supports.decorator';
 import cloneDeep from 'lodash-es/cloneDeep';
+import {SerializerOptions} from '../serializer-options';
 
 class EmptyJsonProperty {
   public name: string = 'myEmptyJsonPropertyObject';
@@ -12,6 +13,7 @@ class EmptyJsonProperty {
 
 describe('Denormalizer', () => {
   const configuration: NormalizerConfiguration = cloneDeep(DEFAULT_NORMALIZER_CONFIGURATION);
+  const defaultOptions: SerializerOptions = {};
 
   let denormalizerEmptyJsonProperty: Denormalizer;
   let denormalizer: Denormalizer;
@@ -21,7 +23,7 @@ describe('Denormalizer', () => {
     denormalizer = new Denormalizer(configuration);
   });
 
-  describe('#serialize', () => {
+  describe('#deserialize', () => {
     it('should have a default configuration', () => {
       class MyDenormalizer extends Denormalizer {
 
@@ -42,15 +44,48 @@ describe('Denormalizer', () => {
       expect(denormalizerEmptyJsonProperty.deserialize(EmptyJsonProperty, {name: 'anotherValue'})).toEqual(new EmptyJsonProperty());
     });
 
-    it('should not normalize json property with writeOnly parameter', () => {
+    it('should not denormalize json property with writeOnly parameter', () => {
       class MyClass {
 
-        @JsonProperty({field: 'name', writeOnly: true})
+        @JsonProperty({writeOnly: true})
         public name: string = 'test';
       }
 
       const obj: MyClass = denormalizer.deserialize(MyClass, {name: 'test2'}) as MyClass;
       expect(obj.name).toEqual('test');
+    });
+
+    it('should not denormalize json property with bad configuration group', () => {
+      class MyClass {
+
+        @JsonProperty({groups: 'Group1'})
+        public name: string = 'test';
+      }
+
+      const obj: MyClass = denormalizer.deserialize(MyClass, {name: 'test2'}, {groups: ['MyGroup2', 'MyGroup3']}) as MyClass;
+      expect(obj.name).toEqual('test');
+    });
+
+    it('should denormalize json property with good configuration group', () => {
+      class MyClass {
+
+        @JsonProperty({groups: 'Group1'})
+        public name: string = 'test';
+      }
+
+      const obj: MyClass = denormalizer.deserialize(MyClass, {name: 'test2'}, {groups: 'Group1'}) as MyClass;
+      expect(obj.name).toEqual('test2');
+    });
+
+    it('should denormalize json property without options group', () => {
+      class MyClass {
+
+        @JsonProperty({groups: 'Group1'})
+        public name: string = 'test';
+      }
+
+      const obj: MyClass = denormalizer.deserialize(MyClass, {name: 'test2'}) as MyClass;
+      expect(obj.name).toEqual('test2');
     });
 
     it('should not denormalize json property with a value to undefined with falsy configuration', () => {
@@ -115,8 +150,8 @@ describe('Denormalizer', () => {
 
       expect(denormalizer.deserializeAll(Mock, toBeDenormalize)).toEqual(data);
       expect(denormalizer.deserialize).toHaveBeenCalledTimes(2);
-      expect(denormalizer.deserialize).toHaveBeenCalledWith(Mock, toBeDenormalize[0]);
-      expect(denormalizer.deserialize).toHaveBeenCalledWith(Mock, toBeDenormalize[1]);
+      expect(denormalizer.deserialize).toHaveBeenCalledWith(Mock, toBeDenormalize[0], defaultOptions);
+      expect(denormalizer.deserialize).toHaveBeenCalledWith(Mock, toBeDenormalize[1], defaultOptions);
     });
 
     it('should throw an error when deserializeAll is called with non array value', () => {

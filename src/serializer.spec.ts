@@ -1,6 +1,7 @@
 import {Serializer} from './serializer';
 import {Normalizer} from './normalizer/normalizer';
 import {Denormalizer} from './normalizer/denormalizer';
+import {SerializerOptions} from './serializer-options';
 
 class Mock {
 
@@ -8,6 +9,8 @@ class Mock {
 }
 
 describe('Serializer', () => {
+  const defaultOptions: SerializerOptions = {};
+
   let normalizer: Normalizer;
   let denormalizer: Denormalizer;
   let serializer: Serializer;
@@ -33,7 +36,7 @@ describe('Serializer', () => {
 
     expect(serializer.deserialize(Mock, data)).toBe(denormalized);
     expect(denormalizer.deserialize).toHaveBeenCalledTimes(1);
-    expect(denormalizer.deserialize).toHaveBeenCalledWith(Mock, data);
+    expect(denormalizer.deserialize).toHaveBeenCalledWith(Mock, data, defaultOptions);
   });
 
   it('should call normalizer when serialize is call', () => {
@@ -43,7 +46,7 @@ describe('Serializer', () => {
 
     expect(serializer.serialize(toBeNormalize)).toBe(data);
     expect(normalizer.serialize).toHaveBeenCalledTimes(1);
-    expect(normalizer.serialize).toHaveBeenCalledWith(toBeNormalize);
+    expect(normalizer.serialize).toHaveBeenCalledWith(toBeNormalize, defaultOptions);
   });
 
   it('should call normalizer when serializeAll is called', () => {
@@ -53,7 +56,7 @@ describe('Serializer', () => {
 
     expect(serializer.serializeAll(toBeNormalize)).toEqual(data);
     expect(normalizer.serializeAll).toHaveBeenCalledTimes(1);
-    expect(normalizer.serializeAll).toHaveBeenCalledWith(toBeNormalize);
+    expect(normalizer.serializeAll).toHaveBeenCalledWith(toBeNormalize, defaultOptions);
   });
 
   it('should call denormalizer when deserializeAll is called', () => {
@@ -63,6 +66,6 @@ describe('Serializer', () => {
 
     expect(serializer.deserializeAll(Mock, toBeDenormalize)).toEqual(data);
     expect(denormalizer.deserializeAll).toHaveBeenCalledTimes(1);
-    expect(denormalizer.deserializeAll).toHaveBeenCalledWith(Mock, toBeDenormalize);
+    expect(denormalizer.deserializeAll).toHaveBeenCalledWith(Mock, toBeDenormalize, defaultOptions);
   });
 });
