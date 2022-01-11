@@ -32,7 +32,7 @@ Serialize and deserialize JSON into strongly typed typescript objects using deco
 To install the library, run :
 
 ```
-npm i @witty-services/ts-repository
+npm i @witty-services/ts-serializer
 ```
 
 ## How to use
