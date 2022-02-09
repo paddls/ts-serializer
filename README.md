@@ -1,13 +1,13 @@
 # TS-Serializer
 
-![ts-serializer-ci](https://github.com/witty-services/ts-serializer/workflows/build/badge.svg?branch=master)
-[![Coverage Status](https://coveralls.io/repos/github/witty-services/ts-serializer/badge.svg?branch=master)](https://coveralls.io/github/witty-services/ts-serializer?branch=master)
-[![npm version](https://badge.fury.io/js/%40witty-services%2Fts-serializer.svg)](https://badge.fury.io/js/%40witty-services%2Fts-serializer)
-![GitHub](https://img.shields.io/github/license/witty-services/ts-serializer)
-![GitHub repo size](https://img.shields.io/github/repo-size/witty-services/ts-serializer)
-![GitHub last commit](https://img.shields.io/github/last-commit/witty-services/ts-serializer)
-![GitHub issues](https://img.shields.io/github/issues/witty-services/ts-serializer)
-![GitHub top language](https://img.shields.io/github/languages/top/witty-services/ts-serializer)
+![ts-serializer-ci](https://github.com/paddls/ts-serializer/workflows/build/badge.svg?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/paddls/ts-serializer/badge.svg?branch=master)](https://coveralls.io/github/paddls/ts-serializer?branch=master)
+[![npm version](https://badge.fury.io/js/%40paddls%2Fts-serializer.svg)](https://badge.fury.io/js/%40paddls%2Fts-serializer)
+![GitHub](https://img.shields.io/github/license/paddls/ts-serializer)
+![GitHub repo size](https://img.shields.io/github/repo-size/paddls/ts-serializer)
+![GitHub last commit](https://img.shields.io/github/last-commit/paddls/ts-serializer)
+![GitHub issues](https://img.shields.io/github/issues/paddls/ts-serializer)
+![GitHub top language](https://img.shields.io/github/languages/top/paddls/ts-serializer)
 
 Serialize and deserialize JSON into strongly typed typescript objects using decorators.
 
@@ -32,7 +32,7 @@ Serialize and deserialize JSON into strongly typed typescript objects using deco
 To install the library, run :
 
 ```
-npm i @witty-services/ts-serializer
+npm i @paddls/ts-serializer
 ```
 
 ## How to use
@@ -40,7 +40,7 @@ npm i @witty-services/ts-serializer
 ### Configure your models
 
 ````typescript
-import {JsonProperty, JsonTypeSupports} from '@witty-services/ts-serializer';
+import {JsonProperty, JsonTypeSupports} from '@paddls/ts-serializer';
 import {Address} from './address.model';
 
 export class User {
@@ -93,7 +93,7 @@ You can find the full ``@JsonProperty()`` decorator configuration in [API](#API)
 ### Serialization
 
 ```typescript
-import {Serializer, Normalizer, Denormalizer} from '@witty-services/ts-serializer';
+import {Serializer, Normalizer, Denormalizer} from '@paddls/ts-serializer';
 
 const object: MyClass = new MyClass();
 
@@ -104,7 +104,7 @@ const data: any = serializer.serialize(object);
 ### Deserialization
 
 ```typescript
-import {Serializer, Normalizer, Denormalizer} from '@witty-services/ts-serializer';
+import {Serializer, Normalizer, Denormalizer} from '@paddls/ts-serializer';
 
 class MyClass {
   // ...
@@ -122,7 +122,7 @@ const myObject: MyClass = serializer.deserialize(MyClass, data);
 You can configure serializer using ``NormalizerConfiguration`` class :
 
 ````typescript
-import {NormalizerConfiguration} from '@witty-services/ts-serializer';
+import {NormalizerConfiguration} from '@paddls/ts-serializer';
 
 const configuration: NormalizerConfiguration = {
   denormalizeNull: false,
@@ -139,8 +139,8 @@ groups configuration aren't used. But if you want to use groups defined in JsonP
 this :
 
 ```typescript
-import {Serializer, Normalizer, Denormalizer} from '@witty-services/ts-serializer';
-import {JsonProperty} from '@witty-services/json-property.decorator';
+import {Serializer, Normalizer, Denormalizer} from '@paddls/ts-serializer';
+import {JsonProperty} from '@paddls/json-property.decorator';
 
 class MyClass {
 
