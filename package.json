@@ -1,6 +1,6 @@
 {
   "name": "@paddls/ts-serializer",
-  "version": "1.0.10-rc.3",
+  "version": "1.0.10",
   "description": "Typescript serializer library",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
