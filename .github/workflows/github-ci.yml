@@ -48,7 +48,10 @@ jobs:
         uses: actions/upload-artifact@master
         with:
           name: ts-serializer
-          path: dist
+          path: |
+            .
+            !node_modules
+
 
   coverall:
     name: Coverall
