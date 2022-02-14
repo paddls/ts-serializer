@@ -1,0 +1,112 @@
+name: Build
+
+on:
+  push:
+    branches: [ '**' ]
+  pull_request:
+    branches: [ '**' ]
+
+jobs:
+  install-dependencies:
+    name: Install dependencies
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [ 10.16.0 ]
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Cache node_modules
+        uses: ./.github/actions/cache-node-modules
+
+      - name: Install dependencies
+        if: steps.cache-nodemodules.outputs.cache-hit != 'true'
+        run: npm ci
+
+  tests:
+    name: Test
+    runs-on: ubuntu-latest
+    needs: install-dependencies
+    strategy:
+      matrix:
+        node-version: [ 10.16.0 ]
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Restore node_modules
+        uses: ./.github/actions/cache-node-modules
+
+      - name: Test
+        run: npm run test
+
+      - name: Archive coverage artifact
+        if: github.ref == 'refs/heads/master'
+        uses: actions/upload-artifact@master
+        with:
+          name: ts-serializer-coverage
+          path: coverage
+
+  linter:
+    name: Linter
+    runs-on: ubuntu-latest
+    needs: install-dependencies
+    strategy:
+      matrix:
+        node-version: [ 10.16.0 ]
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Restore node_modules
+        uses: ./.github/actions/cache-node-modules
+
+      - name: Linter
+        run: npm run lint
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    needs: [ tests, linter ]
+    strategy:
+      matrix:
+        node-version: [ 10.16.0 ]
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Restore node_modules
+        uses: ./.github/actions/cache-node-modules
+
+      - name: Build
+        run: npm run build
+        env:
+          CI: true
+
+      - name: Archive production artifact
+        if: github.ref == 'refs/heads/master'
+        uses: actions/upload-artifact@master
+        with:
+          name: ts-serializer
+          path: dist
