@@ -99,6 +99,7 @@ jobs:
     name: Deploy @witty-services
     needs: build
     if: github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         node-version: [ 10.16.0 ]
