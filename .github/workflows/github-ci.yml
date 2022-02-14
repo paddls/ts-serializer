@@ -33,7 +33,7 @@ jobs:
         uses: actions/upload-artifact@master
         with:
           name: ts-serializer-coverage
-          path: coverage
+          path: ./coverage
 
       - name: Linter
         run: npm run lint
