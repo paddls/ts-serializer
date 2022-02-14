@@ -44,14 +44,13 @@ jobs:
           CI: true
 
       - name: Archive production artifact
-        if: github.ref == 'refs/heads/master'
+        if: "github.ref == 'refs/heads/master' && !contains(github.event.head_commit.message, 'release: v')"
         uses: actions/upload-artifact@master
         with:
           name: ts-serializer
           path: |
             .
             !node_modules
-
 
   coverall:
     name: Coverall
@@ -76,7 +75,7 @@ jobs:
   deploy-paddls:
     name: Deploy @paddls
     needs: build
-    if: github.ref == 'refs/heads/master'
+    if: "github.ref == 'refs/heads/master' && !contains(github.event.head_commit.message, 'release: v')"
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -101,7 +100,7 @@ jobs:
   deploy-witty-services:
     name: Deploy @witty-services
     needs: build
-    if: github.ref == 'refs/heads/master'
+    if: "github.ref == 'refs/heads/master' && !contains(github.event.head_commit.message, 'release: v')"
     runs-on: ubuntu-latest
     strategy:
       matrix:
