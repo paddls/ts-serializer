@@ -75,6 +75,9 @@ jobs:
     needs: build
     if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [ 10.16.0 ]
     steps:
       - name: Download artifact
         uses: actions/download-artifact@master
@@ -97,6 +100,9 @@ jobs:
     needs: build
     if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [ 10.16.0 ]
     steps:
       - name: Download artifact
         uses: actions/download-artifact@master
