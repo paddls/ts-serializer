@@ -11,6 +11,10 @@
 
 Serialize and deserialize JSON into strongly typed typescript objects using decorators.
 
+## Informations
+
+> :warning: Since version 1.0.10, ```ts-serializer``` has been published under ```@paddls``` namespace. We continue to maintain ```@witty-services``` namespace.
+
 ## Summary
 
 * [How to install](#how-to-install)
