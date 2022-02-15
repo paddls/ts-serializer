@@ -63,12 +63,13 @@ jobs:
         uses: actions/download-artifact@master
         with:
           name: ts-serializer-coverage
+          path: ./coverage
 
       - name: Send coverage to Coverall
         uses: coverallsapp/github-action@v1.0.1
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          path-to-lcov: ./lcov.info
+          path-to-lcov: ./coverage/lcov.info
 
   deploy-paddls:
     name: Deploy @paddls
