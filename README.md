@@ -34,15 +34,16 @@ To install the library, run :
 ```
 npm i @paddls/ts-serializer
 ```
+or
+```
+npm i @witty-services/ts-serializer
+```
 
 ## How to use
 
 ### Configure your models
 
 ````typescript
-import {JsonProperty, JsonTypeSupports} from '@paddls/ts-serializer';
-import {Address} from './address.model';
-
 export class User {
 
   @JsonProperty({readOnly: true})
@@ -93,8 +94,6 @@ You can find the full ``@JsonProperty()`` decorator configuration in [API](#API)
 ### Serialization
 
 ```typescript
-import {Serializer, Normalizer, Denormalizer} from '@paddls/ts-serializer';
-
 const object: MyClass = new MyClass();
 
 const serializer: Serializer = new Serialize(new Normalizer(), new Denormalizer());
@@ -104,8 +103,6 @@ const data: any = serializer.serialize(object);
 ### Deserialization
 
 ```typescript
-import {Serializer, Normalizer, Denormalizer} from '@paddls/ts-serializer';
-
 class MyClass {
   // ...
 }
@@ -122,8 +119,6 @@ const myObject: MyClass = serializer.deserialize(MyClass, data);
 You can configure serializer using ``NormalizerConfiguration`` class :
 
 ````typescript
-import {NormalizerConfiguration} from '@paddls/ts-serializer';
-
 const configuration: NormalizerConfiguration = {
   denormalizeNull: false,
   denormalizeUndefined: false,
@@ -139,9 +134,6 @@ groups configuration aren't used. But if you want to use groups defined in JsonP
 this :
 
 ```typescript
-import {Serializer, Normalizer, Denormalizer} from '@paddls/ts-serializer';
-import {JsonProperty} from '@paddls/json-property.decorator';
-
 class MyClass {
 
   @JsonProperty()
@@ -184,7 +176,7 @@ const myObject: MyClass = serializer.deserialize(MyClass, data, {groups: ['Group
 | type            | Function<Type>         | No         | You can provide a type to convert json data to an object of Type or convert an object of Type to json data using Type configuration |
 | readOnly        | boolean                | No         | You can want to use the attribute configuration only in the deserialization process                                                 |
 | writeOnly       | boolean                | No         | You can want to use the attribute configuration only in the serialization process                                                   |
-| customConverter | Converter              | No         | You can add a custom converter object of type [Converter](#converter) to convert your object                                        |
+| customConverter | Converter              | No         | You can add a custom converter object of type [Converter](#customconverter) to convert your object                                        |
 | groups          | string &#124; string[] | No         | You can restrict serialization/deserialization process with groups                                                                  |
 
 ### JsonTypeSupports
