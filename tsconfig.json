@@ -12,9 +12,6 @@
     "allowSyntheticDefaultImports": true,
     "baseUrl": "./",
     "typeRoots": ["node_modules/@types", "manual_typings"],
-    "paths": {
-      "lodash/*": ["node_modules/@types/lodash-es/*"]
-    },
     "esModuleInterop": true
   },
   "typedocOptions": {

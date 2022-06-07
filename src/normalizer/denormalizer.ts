@@ -3,10 +3,8 @@ import {DEFAULT_NORMALIZER_CONFIGURATION, NormalizerConfiguration} from './norma
 import {SerializeType} from '../common';
 import {IDeserializer} from '../ideserializer';
 import {JSON_TYPE_SUPPORTS_METADATA_KEY} from '../decorator/json-type-supports.decorator';
-import isArray from 'lodash-es/isArray';
-import get from 'lodash-es/get';
-import intersection from 'lodash-es/intersection';
 import {normalizeSerializerOptions, SerializerOptions} from '../serializer-options';
+import {get, intersection} from '../util';
 
 export class Denormalizer implements IDeserializer {
 
@@ -83,7 +81,7 @@ export class Denormalizer implements IDeserializer {
       .forEach((cc: JsonPropertyContextConfiguration<T, any>) => {
         const jsonPropertyData: any = get(data, cc.field);
 
-        if (isArray(jsonPropertyData)) {
+        if (Array.isArray(jsonPropertyData)) {
           if (cc.type) {
             result[cc.propertyKey] = this.deserializeAll(cc.type(), jsonPropertyData, options);
           } else if (cc.customConverter) {

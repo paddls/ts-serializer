@@ -1,10 +1,8 @@
 import {JSON_PROPERTY_METADATA_KEY, JsonPropertyContextConfiguration} from '../decorator/json-property.decorator';
 import {DEFAULT_NORMALIZER_CONFIGURATION, NormalizerConfiguration} from './normalizer.configuration';
 import {ISerializer} from '../iserializer';
-import intersection from 'lodash-es/intersection';
-import isArray from 'lodash-es/isArray';
-import set from 'lodash-es/set';
 import {normalizeSerializerOptions, SerializerOptions} from '../serializer-options';
+import {intersection, set} from '../util';
 
 export class Normalizer implements ISerializer {
 
@@ -47,7 +45,7 @@ export class Normalizer implements ISerializer {
       .forEach((jsonProperty: JsonPropertyContextConfiguration<T, any>) => {
         const jsonPropertyData: any = object[jsonProperty.propertyKey];
 
-        if (isArray(jsonPropertyData)) {
+        if (Array.isArray(jsonPropertyData)) {
           if (jsonProperty.type && !!jsonPropertyData) {
             set(result, jsonProperty.field, jsonPropertyData.map((d: any) => this.serialize(d, options)));
           } else if (jsonProperty.customConverter) {
