@@ -1,9 +1,10 @@
 import {DEFAULT_NORMALIZER_CONFIGURATION, NormalizerConfiguration} from './normalizer.configuration';
+import cloneDeep from 'lodash.clonedeep';
 
 describe('NormalizerConfiguration', () => {
 
   it('should has default values', () => {
-    const configuration: NormalizerConfiguration = {...DEFAULT_NORMALIZER_CONFIGURATION};
+    const configuration: NormalizerConfiguration = cloneDeep(DEFAULT_NORMALIZER_CONFIGURATION);
 
     expect(configuration.denormalizeNull).toBeFalsy();
     expect(configuration.denormalizeUndefined).toBeFalsy();

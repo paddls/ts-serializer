@@ -24,6 +24,10 @@
     "typescript": ">=3.4.3"
   },
   "dependencies": {
+    "lodash.clonedeep": "^4.5.0",
+    "lodash.get": "^4.4.2",
+    "lodash.intersection": "^4.4.0",
+    "lodash.set": "^4.3.2",
     "reflect-metadata": "^0.1.13"
   },
   "devDependencies": {

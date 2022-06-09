@@ -5,13 +5,14 @@ import {JsonProperty} from '../decorator/json-property.decorator';
 import {DateConverter} from '../converter/date.converter';
 import {JsonTypeSupports} from '../decorator/json-type-supports.decorator';
 import {SerializerOptions} from '../serializer-options';
+import cloneDeep from 'lodash.clonedeep';
 
 class EmptyJsonProperty {
   public name: string = 'myEmptyJsonPropertyObject';
 }
 
 describe('Denormalizer', () => {
-  const configuration: NormalizerConfiguration = {...DEFAULT_NORMALIZER_CONFIGURATION};
+  const configuration: NormalizerConfiguration = cloneDeep(DEFAULT_NORMALIZER_CONFIGURATION);
   const defaultOptions: SerializerOptions = {};
 
   let denormalizerEmptyJsonProperty: Denormalizer;
