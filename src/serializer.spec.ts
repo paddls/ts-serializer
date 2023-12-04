@@ -32,7 +32,7 @@ describe('Serializer', () => {
   it('should call denormalizer when deserialize is call', () => {
     const denormalized: Mock = new Mock();
     const data: any = {};
-    spyOn(denormalizer, 'deserialize').and.returnValue(denormalized);
+    jest.spyOn(denormalizer, 'deserialize').mockReturnValue(denormalized);
 
     expect(serializer.deserialize(Mock, data)).toBe(denormalized);
     expect(denormalizer.deserialize).toHaveBeenCalledTimes(1);
@@ -42,7 +42,7 @@ describe('Serializer', () => {
   it('should call normalizer when serialize is call', () => {
     const toBeNormalize: Mock = new Mock();
     const data: any = {};
-    spyOn(normalizer, 'serialize').and.returnValue(data);
+    jest.spyOn(normalizer, 'serialize').mockReturnValue(data);
 
     expect(serializer.serialize(toBeNormalize)).toBe(data);
     expect(normalizer.serialize).toHaveBeenCalledTimes(1);
@@ -52,7 +52,7 @@ describe('Serializer', () => {
   it('should call normalizer when serializeAll is called', () => {
     const toBeNormalize: Mock[] = [new Mock(), new Mock()];
     const data: any = [{}, {}];
-    spyOn(normalizer, 'serializeAll').and.returnValues(data);
+    jest.spyOn(normalizer, 'serializeAll').mockReturnValue(data);
 
     expect(serializer.serializeAll(toBeNormalize)).toEqual(data);
     expect(normalizer.serializeAll).toHaveBeenCalledTimes(1);
@@ -62,7 +62,7 @@ describe('Serializer', () => {
   it('should call denormalizer when deserializeAll is called', () => {
     const data: Mock[] = [new Mock(), new Mock()];
     const toBeDenormalize: any = [{}, {}];
-    spyOn(denormalizer, 'deserializeAll').and.returnValues(data);
+    jest.spyOn(denormalizer, 'deserializeAll').mockReturnValue(data);
 
     expect(serializer.deserializeAll(Mock, toBeDenormalize)).toEqual(data);
     expect(denormalizer.deserializeAll).toHaveBeenCalledTimes(1);

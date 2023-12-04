@@ -146,7 +146,8 @@ describe('Denormalizer', () => {
     it('should call x times deserialize method when deserializeAll is called with array', () => {
       const data: Mock[] = [new Mock(), new Mock()];
       const toBeDenormalize: any = [{}, {}];
-      spyOn(denormalizer, 'deserialize').and.returnValues(...data);
+
+      jest.spyOn(denormalizer, 'deserialize').mockReturnValue(new Mock());
 
       expect(denormalizer.deserializeAll(Mock, toBeDenormalize)).toEqual(data);
       expect(denormalizer.deserialize).toHaveBeenCalledTimes(2);
@@ -389,5 +390,5 @@ describe('Denormalizer', () => {
 
       expect(denormalizer.deserializeAll([Date, Map], vehicleData)).toEqual([]);
     });
-  })
+  });
 });

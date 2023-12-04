@@ -150,7 +150,7 @@ describe('Normalizer', () => {
     it('should call x times serialize when serializeAll is called with array', () => {
       const toBeNormalize: Mock[] = [new Mock(), new Mock()];
       const data: any = [{}, {}];
-      spyOn(normalizer, 'serialize').and.returnValues(...data);
+      jest.spyOn(normalizer, 'serialize').mockReturnValue(new Mock());
 
       expect(normalizer.serializeAll(toBeNormalize)).toEqual(data);
       expect(normalizer.serialize).toHaveBeenCalledTimes(2);
