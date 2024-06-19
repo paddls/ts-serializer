@@ -1,5 +1,5 @@
 import {DEFAULT_NORMALIZER_CONFIGURATION, NormalizerConfiguration} from './normalizer.configuration';
-import cloneDeep from 'lodash.clonedeep';
+import {cloneDeep} from 'lodash-es';
 
 describe('NormalizerConfiguration', () => {
 
