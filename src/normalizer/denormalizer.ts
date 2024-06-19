@@ -4,8 +4,8 @@ import {SerializeType} from '../common';
 import {IDeserializer} from '../ideserializer';
 import {JSON_TYPE_SUPPORTS_METADATA_KEY} from '../decorator/json-type-supports.decorator';
 import {normalizeSerializerOptions, SerializerOptions} from '../serializer-options';
-import get from 'lodash.get';
-import intersection from 'lodash.intersection';
+import {get} from 'lodash-es';
+import {intersection} from 'lodash-es';
 
 export class Denormalizer implements IDeserializer {
 

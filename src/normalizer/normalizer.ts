@@ -2,8 +2,8 @@ import {JSON_PROPERTY_METADATA_KEY, JsonPropertyContextConfiguration} from '../d
 import {DEFAULT_NORMALIZER_CONFIGURATION, NormalizerConfiguration} from './normalizer.configuration';
 import {ISerializer} from '../iserializer';
 import {normalizeSerializerOptions, SerializerOptions} from '../serializer-options';
-import set from 'lodash.set';
-import intersection from 'lodash.intersection';
+import {set} from 'lodash-es';
+import {intersection} from 'lodash-es';
 
 export class Normalizer implements ISerializer {
 

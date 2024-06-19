@@ -9,7 +9,7 @@ import {Driver} from './driver.model';
 import {Address} from './address.model';
 import {Car} from './car.model';
 import {Truck} from './truck.model';
-import cloneDeep from 'lodash.clonedeep';
+import {cloneDeep} from 'lodash-es';
 
 describe('Serializer E2E', () => {
   let vehicleData: any;

@@ -5,7 +5,7 @@ import {JsonProperty} from '../decorator/json-property.decorator';
 import {DateConverter} from '../converter/date.converter';
 import {JsonTypeSupports} from '../decorator/json-type-supports.decorator';
 import {SerializerOptions} from '../serializer-options';
-import cloneDeep from 'lodash.clonedeep';
+import {cloneDeep} from 'lodash-es';
 
 class EmptyJsonProperty {
   public name: string = 'myEmptyJsonPropertyObject';
