@@ -29,7 +29,7 @@ export class Normalizer implements ISerializer {
   }
 
   private processing<T>(object: T, options: SerializerOptions): any {
-    const result: {} = {};
+    const result: unknown = {};
 
     const jsonProperties: JsonPropertyContextConfiguration<T, any>[] = Reflect.getMetadata(JSON_PROPERTY_METADATA_KEY, object);
 

@@ -1,0 +1,4 @@
+node_modules
+dist
+src/**/*.spec.*
+src/e2e

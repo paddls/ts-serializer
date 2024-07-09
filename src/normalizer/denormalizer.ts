@@ -8,7 +8,8 @@ import {get, intersection} from '../functions';
 
 export class Denormalizer implements IDeserializer {
 
-  public constructor(protected readonly configuration: NormalizerConfiguration = DEFAULT_NORMALIZER_CONFIGURATION) {}
+  public constructor(protected readonly configuration: NormalizerConfiguration = DEFAULT_NORMALIZER_CONFIGURATION) {
+  }
 
   protected static haveToDenormalize(globalDenormalizeConfiguration: boolean, columnDenormalizeConfiguration: boolean): boolean {
     if (columnDenormalizeConfiguration != null) {
@@ -18,13 +19,13 @@ export class Denormalizer implements IDeserializer {
     return globalDenormalizeConfiguration;
   }
 
-  public deserialize<T>(type: SerializeType<T>|SerializeType<any>[], data: any, options: SerializerOptions = {}): T|null {
+  public deserialize<T>(type: SerializeType<T> | SerializeType<any>[], data: any, options: SerializerOptions = {}): T | null {
     return this.processing(type, data, normalizeSerializerOptions(options));
   }
 
-  public deserializeAll<T>(type: SerializeType<T>|SerializeType<any>[], data: any[], options: SerializerOptions = {}): T[] {
+  public deserializeAll<T>(type: SerializeType<T> | SerializeType<any>[], data: any[], options: SerializerOptions = {}): T[] {
     if (!Array.isArray(data)) {
-      throw new Error(`${data} is not an array.`);
+      throw new Error(`${ data } is not an array.`);
     }
 
     return data
@@ -38,7 +39,7 @@ export class Denormalizer implements IDeserializer {
       .filter((obj: T) => obj !== undefined);
   }
 
-  protected instantiateObject<T>(type: SerializeType<T>|SerializeType<any>[], data: any): T|null {
+  protected instantiateObject<T>(type: SerializeType<T> | SerializeType<any>[], data: any): T | null {
     let finalType: SerializeType<T>;
 
     if (Array.isArray(type)) {
@@ -56,7 +57,7 @@ export class Denormalizer implements IDeserializer {
     return !!finalType ? new (finalType as new() => T)() : null;
   }
 
-  private processing<T>(type: SerializeType<T>|SerializeType<any>[], data: any, options: SerializerOptions): T|null {
+  private processing<T>(type: SerializeType<T> | SerializeType<any>[], data: any, options: SerializerOptions): T | null {
     if (!data) {
       return null;
     }
