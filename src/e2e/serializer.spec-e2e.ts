@@ -9,7 +9,6 @@ import {Driver} from './driver.model';
 import {Address} from './address.model';
 import {Car} from './car.model';
 import {Truck} from './truck.model';
-import cloneDeep from 'lodash.clonedeep';
 
 describe('Serializer E2E', () => {
   let vehicleData: any;
@@ -145,7 +144,7 @@ describe('Serializer E2E', () => {
     let expectedResults: any;
 
     function cleanExpectedResults(): void {
-      expectedResults = cloneDeep(driversData);
+      expectedResults = structuredClone(driversData);
       delete expectedResults[0].type;
       delete expectedResults[1].type;
 

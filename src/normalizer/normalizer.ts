@@ -2,8 +2,7 @@ import {JSON_PROPERTY_METADATA_KEY, JsonPropertyContextConfiguration} from '../d
 import {DEFAULT_NORMALIZER_CONFIGURATION, NormalizerConfiguration} from './normalizer.configuration';
 import {ISerializer} from '../iserializer';
 import {normalizeSerializerOptions, SerializerOptions} from '../serializer-options';
-import set from 'lodash.set';
-import intersection from 'lodash.intersection';
+import {intersection, set} from '../functions';
 
 export class Normalizer implements ISerializer {
 
@@ -40,7 +39,9 @@ export class Normalizer implements ISerializer {
 
     jsonProperties
       .filter((jsonProperty: JsonPropertyContextConfiguration<T, any>) => !jsonProperty.readOnly)
-      .filter((jsonProperty: JsonPropertyContextConfiguration<T, any>) => !options?.groups || intersection(jsonProperty.groups, options.groups).length > 0)
+      .filter((jsonProperty: JsonPropertyContextConfiguration<T, any>) =>
+        !options?.groups || intersection(Array.isArray(jsonProperty.groups) ? jsonProperty.groups : [jsonProperty.groups], Array.isArray(options.groups) ? options.groups : [options.groups]).length > 0
+      )
       .filter((jsonProperty: JsonPropertyContextConfiguration<T, any>) => object[jsonProperty.propertyKey] !== undefined || !!Normalizer.haveToNormalize(this.configuration.normalizeUndefined, jsonProperty.normalizeUndefined))
       .filter((jsonProperty: JsonPropertyContextConfiguration<T, any>) => object[jsonProperty.propertyKey] !== null || !!Normalizer.haveToNormalize(this.configuration.normalizeNull, jsonProperty.normalizeNull))
       .forEach((jsonProperty: JsonPropertyContextConfiguration<T, any>) => {

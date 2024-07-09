@@ -4,6 +4,9 @@
   "description": "Typescript serializer library",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "engines": {
+    "node": ">=18.16.1"
+  },
   "files": [
     "/dist"
   ],
@@ -18,16 +21,12 @@
     "test": "jest --coverage",
     "publish:lib": "npm run build && npm publish --access=public"
   },
-  "author": "Thomas Nisole",
+  "author": "Thomas Nisole, Oscar Guérin",
   "license": "MIT",
   "peerDependencies": {
-    "typescript": ">=3.4.3"
+    "typescript": ">=5.4.5"
   },
   "dependencies": {
-    "lodash.clonedeep": "^4.5.0",
-    "lodash.get": "^4.4.2",
-    "lodash.intersection": "^4.4.0",
-    "lodash.set": "^4.3.2",
     "reflect-metadata": "^0.2.2"
   },
   "devDependencies": {

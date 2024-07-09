@@ -4,8 +4,7 @@ import {SerializeType} from '../common';
 import {IDeserializer} from '../ideserializer';
 import {JSON_TYPE_SUPPORTS_METADATA_KEY} from '../decorator/json-type-supports.decorator';
 import {normalizeSerializerOptions, SerializerOptions} from '../serializer-options';
-import get from 'lodash.get';
-import intersection from 'lodash.intersection';
+import {get, intersection} from '../functions';
 
 export class Denormalizer implements IDeserializer {
 
@@ -76,7 +75,9 @@ export class Denormalizer implements IDeserializer {
 
     jsonProperties
       .filter((cc: JsonPropertyContextConfiguration<T, any>) => !cc.writeOnly)
-      .filter((cc: JsonPropertyContextConfiguration<T, any>) => !options?.groups || intersection(cc.groups, options.groups).length > 0)
+      .filter((cc: JsonPropertyContextConfiguration<T, any>) =>
+        !options?.groups || intersection(Array.isArray(cc.groups) ? cc.groups : [cc.groups], Array.isArray(options.groups) ? options.groups : [options.groups]).length > 0
+      )
       .filter((cc: JsonPropertyContextConfiguration<T, any>) => get(data, cc.field) !== undefined || !!Denormalizer.haveToDenormalize(this.configuration.denormalizeUndefined, cc.denormalizeUndefined))
       .filter((cc: JsonPropertyContextConfiguration<T, any>) => get(data, cc.field) !== null || !!Denormalizer.haveToDenormalize(this.configuration.denormalizeNull, cc.denormalizeNull))
       .forEach((cc: JsonPropertyContextConfiguration<T, any>) => {
